@@ -1,13 +1,33 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LabController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
+// Guest routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class , 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class , 'login']);
 });
 
-Route::resource('jurusans', JurusanController::class);
-Route::resource('kelas', KelasController::class);
-Route::resource('labs', LabController::class);
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class , 'logout'])->name('logout');
+    Route::get('/', function () {
+            return view('dashboard');
+        }
+        )->name('dashboard');
+
+        // Resource routes (permission checks inside controllers)
+        Route::resource('jurusans', JurusanController::class);
+        Route::resource('kelas', KelasController::class);
+        Route::resource('labs', LabController::class);
+
+        // Admin only
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('users', UserController::class);
+        }
+        );    });

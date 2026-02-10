@@ -38,13 +38,28 @@
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     Lab
                 </a>
+                @if(Auth::user() && Auth::user()->isAdmin())
+                <a href="{{ route('users.index') }}" class="sidebar-link flex items-center p-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Kelola User
+                </a>
+                @endif
             </nav>
             <div class="p-4 border-t border-slate-100">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors mb-2">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span class="text-sm font-semibold">Logout</span>
+                    </button>
+                </form>
                 <div class="flex items-center p-2 rounded-lg bg-slate-50">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs mr-3">AD</div>
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs mr-3">
+                        {{ substr(Auth::user()->name ?? 'U', 0, 2) }}
+                    </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-slate-900 truncate">Administrator</p>
-                        <p class="text-xs text-slate-500 truncate">admin@asman.com</p>
+                        <p class="text-sm font-semibold text-slate-900 truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
+                        <p class="text-xs text-slate-500 truncate capitalize">{{ str_replace('_', ' ', Auth::user()->role ?? 'Guest') }}</p>
                     </div>
                 </div>
             </div>

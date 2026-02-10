@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'jurusan_id',
     ];
 
     /**
@@ -44,5 +46,47 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
+
+    // Role Checks
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isGuruJurusan()
+    {
+        return $this->role === 'guru_jurusan';
+    }
+
+    public function isWakilKepsek()
+    {
+        return $this->role === 'wakil_kepsek';
+    }
+
+    public function isKepalaSekolah()
+    {
+        return $this->role === 'kepala_sekolah';
+    }
+
+    public function isBendahara()
+    {
+        return $this->role === 'bendahara';
+    }
+
+    // Permissions
+    public function canEdit()
+    {
+        return in_array($this->role, ['admin', 'guru_jurusan', 'wakil_kepsek']);
+    }
+
+    public function canManageUsers()
+    {
+        return $this->role === 'admin';
     }
 }
