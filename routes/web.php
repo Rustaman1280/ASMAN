@@ -1,7 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\KelasController;
+use App\Http\Controllers\LabController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('dashboard');
 });
+
+Route::resource('jurusans', JurusanController::class);
+Route::resource('kelas', KelasController::class);
+Route::resource('labs', LabController::class);
