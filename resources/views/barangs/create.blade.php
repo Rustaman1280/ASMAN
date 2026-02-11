@@ -19,20 +19,20 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="kode_barang" class="block text-sm font-semibold text-slate-700 mb-2">Kode Barang</label>
-                        <input type="text" name="kode_barang" id="kode_barang" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: BRG-001" required>
+                        <input type="text" name="kode_barang" id="kode_barang" value="{{ old('kode_barang') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: BRG-001" required>
                         @error('kode_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label for="nama_barang" class="block text-sm font-semibold text-slate-700 mb-2">Nama Barang</label>
-                        <input type="text" name="nama_barang" id="nama_barang" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: Laptop Asus" required>
+                        <input type="text" name="nama_barang" id="nama_barang" value="{{ old('nama_barang') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: Laptop Asus" required>
                         @error('nama_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="stock_barang" class="block text-sm font-semibold text-slate-700 mb-2">Stock</label>
-                        <input type="number" name="stock_barang" id="stock_barang" min="0" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Jumlah barang" required>
+                        <label for="stock_barang" class="block text-sm font-semibold text-slate-700 mb-2">Stock Total</label>
+                        <input type="number" name="stock_barang" id="stock_barang" min="0" value="{{ old('stock_barang') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Jumlah total barang" required>
                         @error('stock_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
@@ -40,37 +40,11 @@
                         <select name="supplier_id" id="supplier_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" required>
                             <option value="">-- Pilih Supplier --</option>
                             @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->nama_supplier }}</option>
+                                <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
                             @endforeach
                         </select>
                         @error('supplier_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Lokasi Barang</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <select name="lokasi_type" id="lokasi_type" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" onchange="updateLokasiOptions()" required>
-                                <option value="">-- Tipe Lokasi --</option>
-                                <option value="kelas">Kelas</option>
-                                <option value="lab">Laboratorium</option>
-                            </select>
-                            @error('lokasi_type') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <select name="lokasi_id" id="lokasi_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" required disabled>
-                                <option value="">-- Pilih Lokasi --</option>
-                            </select>
-                            @error('lokasi_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="detail_barang" class="block text-sm font-semibold text-slate-700 mb-2">Detail Barang</label>
-                    <textarea name="detail_barang" id="detail_barang" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Keterangan tambahan..."></textarea>
-                    @error('detail_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="pt-4 border-t border-slate-100 flex justify-end space-x-3">
@@ -81,44 +55,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    const kelasOptions = [
-        @foreach($kelas as $k)
-            { id: "{{ $k->id }}", nama: "{{ $k->nama }}" },
-        @endforeach
-    ];
-
-    const labOptions = [
-        @foreach($labs as $l)
-            { id: "{{ $l->id }}", nama: "{{ $l->nama }}" },
-        @endforeach
-    ];
-
-    function updateLokasiOptions() {
-        const typeSelect = document.getElementById('lokasi_type');
-        const locationSelect = document.getElementById('lokasi_id');
-        const selectedType = typeSelect.value;
-        
-        locationSelect.innerHTML = '<option value="">-- Pilih Lokasi --</option>';
-        locationSelect.disabled = true;
-
-        let options = [];
-        if (selectedType === 'kelas') {
-            options = kelasOptions;
-        } else if (selectedType === 'lab') {
-            options = labOptions;
-        }
-
-        if (options.length > 0) {
-            options.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt.id;
-                option.textContent = opt.nama;
-                locationSelect.appendChild(option);
-            });
-            locationSelect.disabled = false;
-        }
-    }
-</script>
 @endsection

@@ -7,6 +7,7 @@ use App\Http\Controllers\LabController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -29,6 +30,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('labs', LabController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('barangs', BarangController::class);
+        Route::resource('units', UnitController::class);
 
         // Admin only
         Route::middleware('role:admin')->group(function () {

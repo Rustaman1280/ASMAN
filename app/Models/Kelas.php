@@ -13,8 +13,8 @@ class Kelas extends Model
         return $this->belongsTo(Jurusan::class);
     }
 
-    public function barangs()
+    public function units()
     {
-        return $this->morphMany(Barang::class , 'lokasi');
+        return $this->morphMany(Unit::class , 'lokasi');
     }
 }

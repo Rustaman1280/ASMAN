@@ -10,10 +10,7 @@ class Barang extends Model
         'kode_barang',
         'nama_barang',
         'stock_barang',
-        'detail_barang',
         'supplier_id',
-        'lokasi_id',
-        'lokasi_type',
     ];
 
     public function supplier()
@@ -21,8 +18,8 @@ class Barang extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function lokasi()
+    public function units()
     {
-        return $this->morphTo();
+        return $this->hasMany(Unit::class);
     }
 }

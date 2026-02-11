@@ -32,8 +32,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="stock_barang" class="block text-sm font-semibold text-slate-700 mb-2">Stock</label>
-                        <input type="number" name="stock_barang" id="stock_barang" min="0" value="{{ old('stock_barang', $barang->stock_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Jumlah barang" required>
+                        <label for="stock_barang" class="block text-sm font-semibold text-slate-700 mb-2">Stock Total</label>
+                        <input type="number" name="stock_barang" id="stock_barang" min="0" value="{{ old('stock_barang', $barang->stock_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Jumlah total barang" required>
                         @error('stock_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
@@ -48,35 +48,6 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Lokasi Barang</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            @php
-                                $currentType = old('lokasi_type', $barang->lokasi_type === 'App\Models\Kelas' ? 'kelas' : 'lab');
-                            @endphp
-                            <select name="lokasi_type" id="lokasi_type" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" onchange="updateLokasiOptions()" required>
-                                <option value="">-- Tipe Lokasi --</option>
-                                <option value="kelas" {{ $currentType === 'kelas' ? 'selected' : '' }}>Kelas</option>
-                                <option value="lab" {{ $currentType === 'lab' ? 'selected' : '' }}>Laboratorium</option>
-                            </select>
-                            @error('lokasi_type') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <select name="lokasi_id" id="lokasi_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" required>
-                                <option value="">-- Pilih Lokasi --</option>
-                            </select>
-                            @error('lokasi_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="detail_barang" class="block text-sm font-semibold text-slate-700 mb-2">Detail Barang</label>
-                    <textarea name="detail_barang" id="detail_barang" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Keterangan tambahan...">{{ old('detail_barang', $barang->detail_barang) }}</textarea>
-                    @error('detail_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
-                </div>
-
                 <div class="pt-4 border-t border-slate-100 flex justify-end space-x-3">
                     <a href="{{ route('barangs.index') }}" class="px-6 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-xl transition-all">Batal</a>
                     <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">Simpan Perubahan</button>
@@ -85,52 +56,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    const kelasOptions = [
-        @foreach($kelas as $k)
-            { id: "{{ $k->id }}", nama: "{{ $k->nama }}" },
-        @endforeach
-    ];
-
-    const labOptions = [
-        @foreach($labs as $l)
-            { id: "{{ $l->id }}", nama: "{{ $l->nama }}" },
-        @endforeach
-    ];
-
-    const currentLokasiId = "{{ old('lokasi_id', $barang->lokasi_id) }}";
-
-    function updateLokasiOptions() {
-        const typeSelect = document.getElementById('lokasi_type');
-        const locationSelect = document.getElementById('lokasi_id');
-        const selectedType = typeSelect.value;
-        
-        locationSelect.innerHTML = '<option value="">-- Pilih Lokasi --</option>';
-        locationSelect.disabled = true;
-
-        let options = [];
-        if (selectedType === 'kelas') {
-            options = kelasOptions;
-        } else if (selectedType === 'lab') {
-            options = labOptions;
-        }
-
-        if (options.length > 0) {
-            options.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt.id;
-                option.textContent = opt.nama;
-                if (opt.id == currentLokasiId) {
-                    option.selected = true;
-                }
-                locationSelect.appendChild(option);
-            });
-            locationSelect.disabled = false;
-        }
-    }
-
-    // Initialize options on load
-    document.addEventListener('DOMContentLoaded', updateLokasiOptions);
-</script>
 @endsection
