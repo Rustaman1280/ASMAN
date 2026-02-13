@@ -12,10 +12,10 @@
             </div>
             <span class="text-3xl font-bold text-slate-800">{{ \App\Models\Jurusan::count() }}</span>
         </div>
-        <h4 class="text-lg font-semibold text-slate-700">Total Jurusan</h4>
+        <h4 class="text-lg font-semibold text-slate-700">Total Program Keahlian</h4>
         <p class="text-sm text-slate-500 mb-6">Program keahlian yang tersedia.</p>
         <a href="{{ route('jurusans.index') }}" class="text-blue-600 font-semibold text-sm hover:underline flex items-center">
-            Kelola Jurusan
+            Kelola Program Keahlian
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </a>
     </div>
@@ -44,10 +44,10 @@
             </div>
             <span class="text-3xl font-bold text-slate-800">{{ \App\Models\Lab::count() }}</span>
         </div>
-        <h4 class="text-lg font-semibold text-slate-700">Total Lab</h4>
+        <h4 class="text-lg font-semibold text-slate-700">Total Laboratorium</h4>
         <p class="text-sm text-slate-500 mb-6">Fasilitas laboratorium sekolah.</p>
         <a href="{{ route('labs.index') }}" class="text-rose-600 font-semibold text-sm hover:underline flex items-center">
-            Kelola Lab
+            Kelola Laboratorium
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </a>
     </div>
@@ -55,8 +55,8 @@
 
 <div class="mt-12 bg-blue-600 rounded-3xl p-10 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
     <div class="relative z-10">
-        <h3 class="text-2xl font-bold mb-2">Selamat Datang di ASMAN Dashboard</h3>
-        <p class="text-blue-100 max-w-lg mb-0">Kelola data akademik sekolah dengan lebih mudah, cepat, dan rapi dalam satu sistem terintegrasi.</p>
+        <h3 class="text-2xl font-bold mb-2">Selamat Datang di Sistem Inventaris SMKN 1 Garut</h3>
+        <p class="text-blue-100 max-w-lg mb-0">Kelola inventaris sekolah dengan lebih mudah, cepat, dan rapi dalam satu sistem terintegrasi. Semua data barang, pemasok, dan unit dapat dikelola dengan praktis.</p>
     </div>
     <div class="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none">
         <svg class="h-full" viewBox="0 0 200 200" fill="none"><circle cx="100" cy="100" r="100" fill="white"/></svg>
