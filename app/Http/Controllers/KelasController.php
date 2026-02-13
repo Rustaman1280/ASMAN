@@ -60,7 +60,9 @@ class KelasController extends Controller
 
     public function show(\App\Models\Kelas $kelas)
     {
-        return view('kelas.show', compact('kelas'));
+        $kelas->load('units.barang', 'jurusan');
+        $barangs = \App\Models\Barang::all();
+        return view('kelas.show', compact('kelas', 'barangs'));
     }
 
     public function edit(\App\Models\Kelas $kela)

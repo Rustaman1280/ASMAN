@@ -44,6 +44,10 @@ class UnitController extends Controller
 
         Unit::create($validatedData);
 
+        if ($request->filled('redirect_to')) {
+            return redirect($request->redirect_to)->with('success', 'Unit berhasil ditambahkan.');
+        }
+
         return redirect()->route('units.index')->with('success', 'Unit berhasil ditambahkan.');
     }
 

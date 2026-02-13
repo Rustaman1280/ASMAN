@@ -59,7 +59,9 @@ class LabController extends Controller
 
     public function show(\App\Models\Lab $lab)
     {
-        return view('lab.show', compact('lab'));
+        $lab->load('units.barang', 'jurusan');
+        $barangs = \App\Models\Barang::all();
+        return view('lab.show', compact('lab', 'barangs'));
     }
 
     public function edit(\App\Models\Lab $lab)
