@@ -1,4 +1,5 @@
 {
+    "name": "inventaris-smkn1-garut",
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
     "type": "module",
