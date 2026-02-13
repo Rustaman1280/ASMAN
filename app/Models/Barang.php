@@ -9,8 +9,19 @@ class Barang extends Model
     protected $fillable = [
         'kode_barang',
         'nama_barang',
-        'stock_barang',
+        'merk_model',
+        'no_seri_pabrik',
+        'ukuran',
+        'bahan',
+        'tahun_pembuatan',
+        'harga_perolehan',
+        'jumlah_baik',
+        'jumlah_rusak_ringan',
+        'jumlah_rusak_berat',
+        'keterangan_mutasi',
         'supplier_id',
+        'lokasi_id',
+        'lokasi_type',
     ];
 
     public function supplier()
@@ -18,8 +29,13 @@ class Barang extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function units()
+    public function lokasi()
     {
-        return $this->hasMany(Unit::class);
+        return $this->morphTo();
+    }
+
+    public function getJumlahTotalAttribute()
+    {
+        return $this->jumlah_baik + $this->jumlah_rusak_ringan + $this->jumlah_rusak_berat;
     }
 }
