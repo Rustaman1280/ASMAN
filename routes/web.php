@@ -2,8 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JurusanController;
-use App\Http\Controllers\KelasController;
-use App\Http\Controllers\LabController;
+use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
@@ -25,14 +24,7 @@ Route::middleware('auth')->group(function () {
 
         // Resource routes (permission checks inside controllers)
         Route::resource('jurusans', JurusanController::class);
-        Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
-        Route::get('kelas/{kelas}/export-barang', [KelasController::class, 'exportBarang'])->name('kelas.export-barang');
-        Route::post('kelas/{kelas}/import-barang', [KelasController::class, 'importBarang'])->name('kelas.import-barang');
-        Route::get('kelas-template', [KelasController::class, 'downloadTemplate'])->name('kelas.template');
-        Route::resource('labs', LabController::class);
-        Route::get('labs/{lab}/export-barang', [LabController::class, 'exportBarang'])->name('labs.export-barang');
-        Route::post('labs/{lab}/import-barang', [LabController::class, 'importBarang'])->name('labs.import-barang');
-        Route::get('labs-template', [LabController::class, 'downloadTemplate'])->name('labs.template');
+        Route::resource('ruangans', RuanganController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('barangs', BarangController::class);
         Route::get('barangs-export', [BarangController::class, 'export'])->name('barangs.export');

@@ -8,15 +8,12 @@ class Jurusan extends Model
 {
     protected $fillable = ['nama', 'kode'];
 
-    public function kelas()
+    public function ruangans()
     {
-        return $this->hasMany(Kelas::class);
+        return $this->hasMany(Ruangan::class);
     }
 
-    public function labs()
-    {
-        return $this->hasMany(Lab::class);
-    }
+
 
     public function users()
     {

@@ -4,9 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Lab extends Model
+class Ruangan extends Model
 {
-    protected $fillable = ['jurusan_id', 'nama'];
+    protected $fillable = [
+        'kategori',
+        'jenis_ruangan',
+        'nama',
+        'tingkat',
+        'jurusan_id',
+    ];
 
     public function jurusan()
     {

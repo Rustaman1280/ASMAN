@@ -32,14 +32,82 @@
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m0 10V4m0 10h1m-1 4h1m-7 10v-2a2 2 0 012-2h12a2 2 0 012 2v2"></path></svg>
                     Jurusan
                 </a>
-                <a href="{{ route('kelas.index') }}" class="sidebar-link flex items-center p-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all {{ request()->routeIs('kelas.*') ? 'active' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    Kelas
-                </a>
-                <a href="{{ route('labs.index') }}" class="sidebar-link flex items-center p-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all {{ request()->routeIs('labs.*') ? 'active' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    Lab
-                </a>
+                <!-- Ruangan Dropdown -->
+                <div x-data="{ open: {{ request()->routeIs('ruangans.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open" class="sidebar-link w-full flex items-center justify-between p-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all {{ request()->routeIs('ruangans.*') ? 'bg-slate-50 border border-slate-200' : '' }}">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m0 10V4m0 10h1m-1 4h1m-7 10v-2a2 2 0 012-2h12a2 2 0 012 2v2"></path></svg>
+                            Ruangan
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" x-collapse class="pl-4 pr-3 py-2 space-y-4">
+                        <!-- Area Pembelajaran -->
+                        <div x-data="{ sub1: {{ in_array(request('jenis'), ['Ruang Kelas', 'Ruang Laboratorium', 'Ruang Perpustakaan']) ? 'true' : 'false' }} }">
+                            <button @click="sub1 = !sub1" class="w-full flex justify-between items-center text-left px-2 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 cursor-pointer hover:text-slate-600 transition-colors">
+                                <span>Pembelajaran & Akademik</span>
+                                <svg class="w-3 h-3 shrink-0 transition-transform" :class="sub1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="sub1" x-collapse class="space-y-1 pl-2 pb-2">
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Kelas']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Kelas' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Kelas</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Laboratorium']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Laboratorium' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Laboratorium</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Perpustakaan']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Perpustakaan' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Perpustakaan</a>
+                            </div>
+                        </div>
+                        <!-- Area Administrasi -->
+                        <div x-data="{ sub2: {{ in_array(request('jenis'), ['Ruang Pimpinan', 'Ruang Guru', 'Ruang TU (Tata Usaha)']) ? 'true' : 'false' }} }">
+                            <button @click="sub2 = !sub2" class="w-full flex justify-between items-center text-left px-2 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 cursor-pointer hover:text-slate-600 transition-colors">
+                                <span>Administrasi & Manajemen</span>
+                                <svg class="w-3 h-3 shrink-0 transition-transform" :class="sub2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="sub2" x-collapse class="space-y-1 pl-2 pb-2">
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Pimpinan']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Pimpinan' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Pimpinan</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Guru']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Guru' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Guru</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang TU (Tata Usaha)']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang TU (Tata Usaha)' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang TU</a>
+                            </div>
+                        </div>
+                        <!-- Area Penunjang -->
+                        <div x-data="{ sub3: {{ in_array(request('jenis'), ['Ruang OSIS', 'Ruang Konseling', 'Ruang UKS', 'Ruang Ibadah']) ? 'true' : 'false' }} }">
+                            <button @click="sub3 = !sub3" class="w-full flex justify-between items-center text-left px-2 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 cursor-pointer hover:text-slate-600 transition-colors">
+                                <span>Penunjang Pendidikan</span>
+                                <svg class="w-3 h-3 shrink-0 transition-transform" :class="sub3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="sub3" x-collapse class="space-y-1 pl-2 pb-2">
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang OSIS']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang OSIS' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang OSIS</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Konseling']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Konseling' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Konseling</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang UKS']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang UKS' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang UKS</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Ibadah']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Ibadah' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Ibadah</a>
+                            </div>
+                        </div>
+                        <!-- Area Fasilitas Umum -->
+                        <div x-data="{ sub4: {{ in_array(request('jenis'), ['Ruang Toilet', 'Tempat Bermain / Olahraga', 'Ruang Gudang']) ? 'true' : 'false' }} }">
+                            <button @click="sub4 = !sub4" class="w-full flex justify-between items-center text-left px-2 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 cursor-pointer hover:text-slate-600 transition-colors">
+                                <span>Fasilitas Umum</span>
+                                <svg class="w-3 h-3 shrink-0 transition-transform" :class="sub4 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="sub4" x-collapse class="space-y-1 pl-2 pb-2">
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Toilet']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Toilet' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Toilet</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Tempat Bermain / Olahraga']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Tempat Bermain / Olahraga' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Tempat Bermain / Olahraga</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Gudang']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Gudang' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Gudang</a>
+                            </div>
+                        </div>
+                        <!-- Area Bangunan & Sirkulasi -->
+                        <div x-data="{ sub5: {{ in_array(request('jenis'), ['Ruang Bangunan', 'Ruang Sirkulasi', 'Ruang Praktik']) ? 'true' : 'false' }} }">
+                            <button @click="sub5 = !sub5" class="w-full flex justify-between items-center text-left px-2 py-1 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 cursor-pointer hover:text-slate-600 transition-colors">
+                                <span>Bangunan & Sirkulasi</span>
+                                <svg class="w-3 h-3 shrink-0 transition-transform" :class="sub5 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="sub5" x-collapse class="space-y-1 pl-2 pb-2">
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Bangunan']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Bangunan' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Bangunan</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Sirkulasi']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Sirkulasi' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Sirkulasi</a>
+                                <a href="{{ route('ruangans.index', ['jenis' => 'Ruang Praktik']) }}" class="block px-3 py-1.5 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ request('jenis') == 'Ruang Praktik' ? 'bg-blue-50 text-blue-700 font-medium' : '' }}">Ruang Praktik</a>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100">
+                            <a href="{{ route('ruangans.index') }}" class="block px-3 py-2 text-sm text-slate-600 font-semibold rounded-lg hover:bg-slate-100 hover:text-blue-600 transition-colors {{ !request('jenis') ? 'bg-blue-50 text-blue-700' : '' }}">Semua Ruangan</a>
+                        </div>
+                    </div>
+                </div>
                 <a href="{{ route('suppliers.index') }}" class="sidebar-link flex items-center p-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m0 10V4m0 10h1m-1 4h1m-7 10v-2a2 2 0 012-2h12a2 2 0 012 2v2"></path></svg>
                     Data Supplier

@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Supplier;
-use App\Models\Kelas;
-use App\Models\Lab;
+use App\Models\Ruangan;
 use App\Exports\BarangExport;
 use App\Imports\BarangImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,12 +22,11 @@ class BarangController extends Controller
     public function create()
     {
         $suppliers = Supplier::all();
-        $kelas = Kelas::all();
-        $labs = Lab::all();
-        $preLokasiType = request('lokasi_type');
+        $ruangans = Ruangan::all();
+        $preLokasiType = request('lokasi_type'); // now defaults to ruangan, keeping for compatibility
         $preLokasiId = request('lokasi_id');
         $redirectTo = request('redirect_to');
-        return view('barangs.create', compact('suppliers', 'kelas', 'labs', 'preLokasiType', 'preLokasiId', 'redirectTo'));
+        return view('barangs.create', compact('suppliers', 'ruangans', 'preLokasiType', 'preLokasiId', 'redirectTo'));
     }
 
     public function store(Request $request)
@@ -47,12 +45,14 @@ class BarangController extends Controller
             'jumlah_rusak_berat' => 'required|integer|min:0',
             'keterangan_mutasi' => 'nullable|string',
             'supplier_id' => 'required|exists:suppliers,id',
-            'lokasi_type' => 'nullable|in:kelas,lab',
+            'lokasi_type' => 'nullable|in:ruangan',
             'lokasi_id' => 'nullable|integer',
         ]);
 
-        if (!empty($validatedData['lokasi_type'])) {
-            $validatedData['lokasi_type'] = $validatedData['lokasi_type'] === 'kelas' ? Kelas::class : Lab::class;
+        if (!empty($validatedData['lokasi_id'])) {
+            $validatedData['lokasi_type'] = Ruangan::class;
+        } else {
+            $validatedData['lokasi_type'] = null;
         }
 
         Barang::create($validatedData);
@@ -73,9 +73,8 @@ class BarangController extends Controller
     public function edit(Barang $barang)
     {
         $suppliers = Supplier::all();
-        $kelas = Kelas::all();
-        $labs = Lab::all();
-        return view('barangs.edit', compact('barang', 'suppliers', 'kelas', 'labs'));
+        $ruangans = Ruangan::all();
+        return view('barangs.edit', compact('barang', 'suppliers', 'ruangans'));
     }
 
     public function update(Request $request, Barang $barang)
@@ -94,12 +93,12 @@ class BarangController extends Controller
             'jumlah_rusak_berat' => 'required|integer|min:0',
             'keterangan_mutasi' => 'nullable|string',
             'supplier_id' => 'required|exists:suppliers,id',
-            'lokasi_type' => 'nullable|in:kelas,lab',
+            'lokasi_type' => 'nullable|in:ruangan',
             'lokasi_id' => 'nullable|integer',
         ]);
 
-        if (!empty($validatedData['lokasi_type'])) {
-            $validatedData['lokasi_type'] = $validatedData['lokasi_type'] === 'kelas' ? Kelas::class : Lab::class;
+        if (!empty($validatedData['lokasi_id'])) {
+            $validatedData['lokasi_type'] = Ruangan::class;
         } else {
             $validatedData['lokasi_type'] = null;
             $validatedData['lokasi_id'] = null;
