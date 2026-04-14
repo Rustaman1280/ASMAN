@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Lab;
 use App\Models\Jurusan;
+use App\Models\Ruangan;
 
 class LabSeeder extends Seeder
 {
@@ -17,7 +16,24 @@ class LabSeeder extends Seeder
         $rpl = Jurusan::where('kode', 'RPL')->first();
         $tkj = Jurusan::where('kode', 'TKJ')->first();
 
-        Lab::firstOrCreate(['jurusan_id' => $rpl->id, 'nama' => 'Lab RPL']);
-        Lab::firstOrCreate(['jurusan_id' => $tkj->id, 'nama' => 'Lab TKJ']);
+        if ($rpl) {
+            Ruangan::firstOrCreate([
+                'nama' => 'Lab RPL',
+            ], [
+                'kategori' => 'Area Pembelajaran & Akademik',
+                'jenis_ruangan' => 'Ruang Laboratorium',
+                'jurusan_id' => $rpl->id,
+            ]);
+        }
+
+        if ($tkj) {
+            Ruangan::firstOrCreate([
+                'nama' => 'Lab TKJ',
+            ], [
+                'kategori' => 'Area Pembelajaran & Akademik',
+                'jenis_ruangan' => 'Ruang Laboratorium',
+                'jurusan_id' => $tkj->id,
+            ]);
+        }
     }
 }

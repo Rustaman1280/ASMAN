@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Barang;
 use App\Models\Supplier;
-use App\Models\Kelas;
-use App\Models\Lab;
+use App\Models\Ruangan;
 
 class BarangSeeder extends Seeder
 {
@@ -17,33 +15,50 @@ class BarangSeeder extends Seeder
     public function run(): void
     {
         $supplier1 = Supplier::first();
-        $kelas = Kelas::where('nama', 'X RPL 1')->first();
-        $lab = Lab::where('nama', 'Lab RPL')->first();
+        $ruangKelas = Ruangan::where('nama', 'Ruang Kelas X RPL 1')->first();
+        $ruangLab = Ruangan::where('nama', 'Lab RPL')->first()
+            ?? Ruangan::where('jenis_ruangan', 'Ruang Laboratorium')->first();
 
-        if ($supplier1 && $lab) {
+        if ($supplier1 && $ruangLab) {
             Barang::firstOrCreate(
                 ['kode_barang' => 'BRG001'],
                 [
                     'nama_barang' => 'Laptop Asus',
-                    'stock_barang' => 10,
-                    'detail_barang' => 'Laptop untuk UNBK',
+                    'merk_model' => 'Asus VivoBook',
+                    'no_seri_pabrik' => 'SN-LAP-001',
+                    'ukuran' => '14 inch',
+                    'bahan' => 'Plastik',
+                    'tahun_pembuatan' => '2025',
+                    'harga_perolehan' => 7500000,
+                    'jumlah_baik' => 10,
+                    'jumlah_rusak_ringan' => 0,
+                    'jumlah_rusak_berat' => 0,
+                    'keterangan_mutasi' => null,
                     'supplier_id' => $supplier1->id,
-                    'lokasi_id' => $lab->id,
-                    'lokasi_type' => Lab::class,
+                    'lokasi_id' => $ruangLab->id,
+                    'lokasi_type' => Ruangan::class,
                 ]
             );
         }
 
-        if ($supplier1 && $kelas) {
+        if ($supplier1 && $ruangKelas) {
             Barang::firstOrCreate(
                 ['kode_barang' => 'BRG002'],
                 [
                     'nama_barang' => 'Proyektor Epson',
-                    'stock_barang' => 2,
-                    'detail_barang' => 'Proyektor kelas',
+                    'merk_model' => 'Epson EB-X06',
+                    'no_seri_pabrik' => 'SN-PRJ-002',
+                    'ukuran' => '-',
+                    'bahan' => 'Plastik',
+                    'tahun_pembuatan' => '2024',
+                    'harga_perolehan' => 6800000,
+                    'jumlah_baik' => 2,
+                    'jumlah_rusak_ringan' => 0,
+                    'jumlah_rusak_berat' => 0,
+                    'keterangan_mutasi' => 'Ditempatkan di ruang kelas',
                     'supplier_id' => $supplier1->id,
-                    'lokasi_id' => $kelas->id,
-                    'lokasi_type' => Kelas::class,
+                    'lokasi_id' => $ruangKelas->id,
+                    'lokasi_type' => Ruangan::class,
                 ]
             );
         }
