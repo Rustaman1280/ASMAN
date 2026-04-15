@@ -69,9 +69,9 @@
             <div>
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Lokasi</p>
                 <p class="text-sm text-slate-700">
-                    @if($barang->lokasi)
-                        {{ $barang->lokasi->nama_kelas ?? $barang->lokasi->nama_lab ?? '-' }}
-                        <span class="text-xs text-slate-400">({{ class_basename($barang->lokasi_type) }})</span>
+                    @if($barang->ruangan)
+                        {{ $barang->ruangan->nama }}
+                        <span class="text-xs text-slate-400">({{ $barang->ruangan->jenis_ruangan }})</span>
                     @else
                         -
                     @endif

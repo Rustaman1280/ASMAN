@@ -21,6 +21,6 @@ class Ruangan extends Model
 
     public function barangs()
     {
-        return $this->morphMany(Barang::class, 'lokasi');
+        return $this->hasMany(Barang::class);
     }
 }

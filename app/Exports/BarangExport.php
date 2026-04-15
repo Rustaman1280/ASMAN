@@ -14,7 +14,7 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
 {
     public function collection()
     {
-        return Barang::with(['supplier', 'lokasi'])->get();
+        return Barang::with(['supplier', 'ruangan'])->get();
     }
 
     public function headings(): array
@@ -45,10 +45,8 @@ class BarangExport implements FromCollection, WithHeadings, WithMapping, WithSty
         $no++;
 
         $lokasi = '-';
-        if ($barang->lokasi) {
-            $nama = $barang->lokasi->nama_kelas ?? $barang->lokasi->nama_lab ?? $barang->lokasi->nama ?? '-';
-            $type = class_basename($barang->lokasi_type);
-            $lokasi = "{$nama} ({$type})";
+        if ($barang->ruangan) {
+            $lokasi = "{$barang->ruangan->nama} ({$barang->ruangan->jenis_ruangan})";
         }
 
         return [

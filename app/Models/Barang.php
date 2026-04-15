@@ -20,8 +20,7 @@ class Barang extends Model
         'jumlah_rusak_berat',
         'keterangan_mutasi',
         'supplier_id',
-        'lokasi_id',
-        'lokasi_type',
+        'ruangan_id',
     ];
 
     public function supplier()
@@ -29,9 +28,9 @@ class Barang extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function lokasi()
+    public function ruangan()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Ruangan::class);
     }
 
     public function getJumlahTotalAttribute()

@@ -146,9 +146,9 @@
                         </td>
                         <td class="px-4 py-4 text-sm" x-show="columns.includes('supplier')">{{ $barang->supplier->nama_supplier ?? '-' }}</td>
                         <td class="px-4 py-4 text-sm" x-show="columns.includes('lokasi')">
-                            @if($barang->lokasi)
-                                {{ $barang->lokasi->nama_kelas ?? $barang->lokasi->nama_lab ?? '-' }}
-                                <span class="text-xs text-slate-400">({{ class_basename($barang->lokasi_type) }})</span>
+                            @if($barang->ruangan)
+                                {{ $barang->ruangan->nama }}
+                                <span class="text-xs text-slate-400">({{ $barang->ruangan->jenis_ruangan }})</span>
                             @else - @endif
                         </td>
                         <td class="px-4 py-4 max-w-[150px] truncate text-xs text-slate-500" x-show="columns.includes('mutasi')">{{ $barang->keterangan_mutasi ?? '-' }}</td>

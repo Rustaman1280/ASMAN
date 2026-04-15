@@ -110,14 +110,14 @@
                         @error('supplier_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label for="lokasi" class="block text-sm font-semibold text-slate-700 mb-2">Lokasi (Opsional)</label>
-                        <select name="lokasi_type" id="lokasi_type" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all mb-2" onchange="updateLokasiOptions()">
+                        <label for="lokasi_id" class="block text-sm font-semibold text-slate-700 mb-2">Lokasi Ruangan (Opsional)</label>
+                        <select name="lokasi_id" id="lokasi_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
                             <option value="">-- Tanpa Lokasi --</option>
-                            <option value="kelas" {{ old('lokasi_type', $preLokasiType ?? '') === 'kelas' ? 'selected' : '' }}>Kelas</option>
-                            <option value="lab" {{ old('lokasi_type', $preLokasiType ?? '') === 'lab' ? 'selected' : '' }}>Lab</option>
-                        </select>
-                        <select name="lokasi_id" id="lokasi_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" {{ old('lokasi_type') ? '' : 'disabled' }}>
-                            <option value="">-- Pilih Ruangan --</option>
+                            @foreach($ruangans as $ruangan)
+                                <option value="{{ $ruangan->id }}" {{ old('lokasi_id', $preLokasiId ?? '') == $ruangan->id ? 'selected' : '' }}>
+                                    {{ $ruangan->nama }} ({{ $ruangan->jenis_ruangan }})
+                                </option>
+                            @endforeach
                         </select>
                         @error('lokasi_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
@@ -138,34 +138,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    const kelasData = @json($kelas);
-    const labsData = @json($labs);
-    const oldLokasiId = "{{ old('lokasi_id', $preLokasiId ?? '') }}";
-    const preLokasiType = "{{ old('lokasi_type', $preLokasiType ?? '') }}";
-
-    function updateLokasiOptions() {
-        const type = document.getElementById('lokasi_type').value;
-        const lokasiSelect = document.getElementById('lokasi_id');
-        lokasiSelect.innerHTML = '<option value="">-- Pilih Ruangan --</option>';
-        lokasiSelect.disabled = !type;
-
-        const data = type === 'kelas' ? kelasData : (type === 'lab' ? labsData : []);
-        data.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.id;
-            opt.textContent = item.nama;
-            if (oldLokasiId == item.id) opt.selected = true;
-            lokasiSelect.appendChild(opt);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (preLokasiType) {
-            document.getElementById('lokasi_type').value = preLokasiType;
-        }
-        if (document.getElementById('lokasi_type').value) updateLokasiOptions();
-    });
-</script>
 @endsection

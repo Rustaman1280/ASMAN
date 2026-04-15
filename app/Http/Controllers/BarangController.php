@@ -14,7 +14,7 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barangs = Barang::with(['supplier', 'lokasi'])->get();
+        $barangs = Barang::with(['supplier', 'ruangan'])->get();
         $suppliers = Supplier::all();
         return view('barangs.index', compact('barangs', 'suppliers'));
     }
@@ -45,15 +45,11 @@ class BarangController extends Controller
             'jumlah_rusak_berat' => 'required|integer|min:0',
             'keterangan_mutasi' => 'nullable|string',
             'supplier_id' => 'required|exists:suppliers,id',
-            'lokasi_type' => 'nullable|in:ruangan',
-            'lokasi_id' => 'nullable|integer',
+            'lokasi_id' => 'nullable|exists:ruangans,id',
         ]);
 
-        if (!empty($validatedData['lokasi_id'])) {
-            $validatedData['lokasi_type'] = Ruangan::class;
-        } else {
-            $validatedData['lokasi_type'] = null;
-        }
+        $validatedData['ruangan_id'] = $validatedData['lokasi_id'] ?? null;
+        unset($validatedData['lokasi_id']);
 
         Barang::create($validatedData);
 
@@ -66,7 +62,7 @@ class BarangController extends Controller
 
     public function show(Barang $barang)
     {
-        $barang->load(['supplier', 'lokasi']);
+        $barang->load(['supplier', 'ruangan']);
         return view('barangs.show', compact('barang'));
     }
 
@@ -93,16 +89,11 @@ class BarangController extends Controller
             'jumlah_rusak_berat' => 'required|integer|min:0',
             'keterangan_mutasi' => 'nullable|string',
             'supplier_id' => 'required|exists:suppliers,id',
-            'lokasi_type' => 'nullable|in:ruangan',
-            'lokasi_id' => 'nullable|integer',
+            'lokasi_id' => 'nullable|exists:ruangans,id',
         ]);
 
-        if (!empty($validatedData['lokasi_id'])) {
-            $validatedData['lokasi_type'] = Ruangan::class;
-        } else {
-            $validatedData['lokasi_type'] = null;
-            $validatedData['lokasi_id'] = null;
-        }
+        $validatedData['ruangan_id'] = $validatedData['lokasi_id'] ?? null;
+        unset($validatedData['lokasi_id']);
 
         $barang->update($validatedData);
 
