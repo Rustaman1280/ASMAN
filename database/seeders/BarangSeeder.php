@@ -35,8 +35,7 @@ class BarangSeeder extends Seeder
                     'jumlah_rusak_berat' => 0,
                     'keterangan_mutasi' => null,
                     'supplier_id' => $supplier1->id,
-                    'lokasi_id' => $ruangLab->id,
-                    'lokasi_type' => Ruangan::class,
+                    'ruangan_id' => $ruangLab->id,
                 ]
             );
         }
@@ -57,8 +56,7 @@ class BarangSeeder extends Seeder
                     'jumlah_rusak_berat' => 0,
                     'keterangan_mutasi' => 'Ditempatkan di ruang kelas',
                     'supplier_id' => $supplier1->id,
-                    'lokasi_id' => $ruangKelas->id,
-                    'lokasi_type' => Ruangan::class,
+                    'ruangan_id' => $ruangKelas->id,
                 ]
             );
         }

@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('ruangans', RuanganController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('barangs', BarangController::class);
+        Route::put('unit-barangs/{unitBarang}', [BarangController::class, 'updateUnit'])->name('unit-barangs.update');
+        Route::get('barangs/{barang}/units', [BarangController::class, 'units'])->name('barangs.units');
         Route::get('barangs-export', [BarangController::class, 'export'])->name('barangs.export');
         Route::post('barangs-import', [BarangController::class, 'import'])->name('barangs.import');
         Route::get('barangs-template', [BarangController::class, 'downloadTemplate'])->name('barangs.template');

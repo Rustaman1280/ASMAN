@@ -154,6 +154,7 @@
                         <td class="px-4 py-4 max-w-[150px] truncate text-xs text-slate-500" x-show="columns.includes('mutasi')">{{ $barang->keterangan_mutasi ?? '-' }}</td>
                         <td class="px-4 py-4 text-right">
                             <div class="flex justify-end space-x-1">
+                                <a href="{{ route('barangs.units', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors text-xs font-medium">Unit</a>
                                 <a href="{{ route('barangs.show', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-xs font-medium">Detail</a>
                                 <a href="{{ route('barangs.edit', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors text-xs font-medium">Edit</a>
                                 <form action="{{ route('barangs.destroy', $barang) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">

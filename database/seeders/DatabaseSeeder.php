@@ -16,11 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class ,
-            JurusanSeeder::class ,
-            RuanganSeeder::class ,
-            SupplierSeeder::class ,
-            BarangSeeder::class ,
+            UserSeeder::class,
+            JurusanSeeder::class,
+            RuanganSeeder::class,
+            SupplierSeeder::class,
+            BarangSeeder::class,
         ]);
+
+        \Illuminate\Support\Facades\Artisan::call('app:sync-unit-barangs');
+        $this->command->info('Unit barangs synced successfully.');
     }
 }

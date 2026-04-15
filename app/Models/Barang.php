@@ -33,6 +33,11 @@ class Barang extends Model
         return $this->belongsTo(Ruangan::class);
     }
 
+    public function unitBarangs()
+    {
+        return $this->hasMany(UnitBarang::class);
+    }
+
     public function getJumlahTotalAttribute()
     {
         return $this->jumlah_baik + $this->jumlah_rusak_ringan + $this->jumlah_rusak_berat;

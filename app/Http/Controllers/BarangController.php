@@ -51,7 +51,8 @@ class BarangController extends Controller
         $validatedData['ruangan_id'] = $validatedData['lokasi_id'] ?? null;
         unset($validatedData['lokasi_id']);
 
-        Barang::create($validatedData);
+        $barang = Barang::create($validatedData);
+        $this->syncUnits($barang);
 
         if ($request->filled('redirect_to')) {
             return redirect($request->redirect_to)->with('success', 'Barang berhasil ditambahkan.');
@@ -64,6 +65,39 @@ class BarangController extends Controller
     {
         $barang->load(['supplier', 'ruangan']);
         return view('barangs.show', compact('barang'));
+    }
+
+    public function units(Barang $barang)
+    {
+        $barang->load(['unitBarangs', 'ruangan']);
+        return view('barangs.units', compact('barang'));
+    }
+
+    public function updateUnit(Request $request, \App\Models\UnitBarang $unitBarang)
+    {
+        $validated = $request->validate([
+            'keterangan' => 'nullable|string',
+            'kondisi' => 'required|in:baik,rusak_ringan,rusak_berat',
+        ]);
+
+        $oldKondisi = $unitBarang->kondisi;
+        $newKondisi = $validated['kondisi'];
+
+        $unitBarang->update($validated);
+
+        if ($oldKondisi !== $newKondisi) {
+            $barang = $unitBarang->barang;
+            $oldCol = 'jumlah_' . $oldKondisi;
+            $newCol = 'jumlah_' . $newKondisi;
+            
+            if ($barang->$oldCol > 0) {
+                $barang->$oldCol -= 1;
+            }
+            $barang->$newCol += 1;
+            $barang->save();
+        }
+
+        return back()->with('success', 'Rincian unit berhasil diperbarui.');
     }
 
     public function edit(Barang $barang)
@@ -96,8 +130,37 @@ class BarangController extends Controller
         unset($validatedData['lokasi_id']);
 
         $barang->update($validatedData);
+        $this->syncUnits($barang);
 
         return redirect()->route('barangs.index')->with('success', 'Barang berhasil diperbarui.');
+    }
+
+    private function syncUnits(Barang $b)
+    {
+        // Simple append logic for now to make sure units reflect the capacity
+        $kondisis = array_merge(
+            array_fill(0, $b->jumlah_baik, 'baik'),
+            array_fill(0, $b->jumlah_rusak_ringan, 'rusak_ringan'),
+            array_fill(0, $b->jumlah_rusak_berat, 'rusak_berat')
+        );
+        $existingCount = $b->unitBarangs()->count();
+        $targetCount = count($kondisis);
+        
+        if ($existingCount < $targetCount) {
+            foreach ($kondisis as $i => $k) {
+                if ($i < $existingCount) continue;
+                $kodeUnit = $b->kode_barang . '-' . str_pad($i + 1, 3, '0', STR_PAD_LEFT);
+                \App\Models\UnitBarang::create([
+                    'barang_id' => $b->id,
+                    'kode_unit' => $kodeUnit,
+                    'kondisi' => $k
+                ]);
+            }
+        } elseif ($existingCount > $targetCount) {
+             // For deletions, we truncate the overflow units.
+             // Normally this requires more complex ID mapping.
+             \App\Models\UnitBarang::where('barang_id', $b->id)->orderBy('id', 'desc')->take($existingCount - $targetCount)->delete();
+        }
     }
 
     public function destroy(Barang $barang)

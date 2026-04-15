@@ -97,41 +97,42 @@
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
                             @foreach($ruangan->barangs as $brg)
-                            <tr class="hover:bg-slate-50 transition-colors"
-                                x-show="rowVisible('{{ addslashes($brg->nama_barang) }}', '{{ addslashes($brg->kode_barang) }}', '{{ addslashes($brg->merk_model) }}', '{{ addslashes($brg->supplier->nama_supplier ?? '') }}', {{ $brg->jumlah_baik }}, {{ $brg->jumlah_rusak_ringan }}, {{ $brg->jumlah_rusak_berat }})"
-                                x-transition.opacity>
-                                <td class="px-4 py-4 text-center text-slate-500">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-4 font-medium text-slate-900" x-show="columns.includes('nama_barang')">{{ $brg->nama_barang }}</td>
-                                <td class="px-4 py-4" x-show="columns.includes('merk_model')">{{ $brg->merk_model ?? '-' }}</td>
-                                <td class="px-4 py-4 font-mono text-xs" x-show="columns.includes('no_seri_pabrik')">{{ $brg->no_seri_pabrik ?? '-' }}</td>
-                                <td class="px-4 py-4" x-show="columns.includes('ukuran')">{{ $brg->ukuran ?? '-' }}</td>
-                                <td class="px-4 py-4" x-show="columns.includes('bahan')">{{ $brg->bahan ?? '-' }}</td>
-                                <td class="px-4 py-4" x-show="columns.includes('tahun')">{{ $brg->tahun_pembuatan ?? '-' }}</td>
-                                <td class="px-4 py-4 font-mono text-xs font-semibold text-slate-500" x-show="columns.includes('kode_barang')">{{ $brg->kode_barang }}</td>
-                                <td class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $brg->jumlah_total > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $brg->jumlah_total }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-4 text-right whitespace-nowrap" x-show="columns.includes('harga')">
-                                    @if($brg->harga_perolehan) Rp {{ number_format($brg->harga_perolehan, 0, ',', '.') }} @else - @endif
-                                </td>
-                                <td class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700" title="Baik">{{ $brg->jumlah_baik }}</span>
-                                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-amber-50 text-amber-700" title="Rusak Ringan">{{ $brg->jumlah_rusak_ringan }}</span>
-                                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-rose-50 text-rose-700" title="Rusak Berat">{{ $brg->jumlah_rusak_berat }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4 text-sm" x-show="columns.includes('supplier')">{{ $brg->supplier->nama_supplier ?? '-' }}</td>
-                                <td class="px-4 py-4 max-w-[150px] truncate text-xs text-slate-500" x-show="columns.includes('mutasi')">{{ $brg->keterangan_mutasi ?? '-' }}</td>
-                                <td class="px-4 py-4 text-right">
-                                    <div class="flex justify-end space-x-1">
-                                        <a href="{{ route('barangs.show', $brg) }}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-xs font-medium">Detail</a>
-                                        <a href="{{ route('barangs.edit', $brg) }}" class="inline-flex items-center px-2.5 py-1.5 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors text-xs font-medium">Edit</a>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr class="hover:bg-slate-50 transition-colors"
+                                    x-show="rowVisible('{{ addslashes($brg->nama_barang) }}', '{{ addslashes($brg->kode_barang) }}', '{{ addslashes($brg->merk_model) }}', '{{ addslashes($brg->supplier->nama_supplier ?? '') }}', {{ $brg->jumlah_baik }}, {{ $brg->jumlah_rusak_ringan }}, {{ $brg->jumlah_rusak_berat }})"
+                                    x-transition.opacity>
+                                    <td class="px-4 py-4 text-center text-slate-500">{{ $loop->iteration }}</td>
+                                    <td class="px-4 py-4 font-medium text-slate-900" x-show="columns.includes('nama_barang')">{{ $brg->nama_barang }}</td>
+                                    <td class="px-4 py-4" x-show="columns.includes('merk_model')">{{ $brg->merk_model ?? '-' }}</td>
+                                    <td class="px-4 py-4 font-mono text-xs" x-show="columns.includes('no_seri_pabrik')">{{ $brg->no_seri_pabrik ?? '-' }}</td>
+                                    <td class="px-4 py-4" x-show="columns.includes('ukuran')">{{ $brg->ukuran ?? '-' }}</td>
+                                    <td class="px-4 py-4" x-show="columns.includes('bahan')">{{ $brg->bahan ?? '-' }}</td>
+                                    <td class="px-4 py-4" x-show="columns.includes('tahun')">{{ $brg->tahun_pembuatan ?? '-' }}</td>
+                                    <td class="px-4 py-4 font-mono text-xs font-semibold text-slate-500" x-show="columns.includes('kode_barang')">{{ $brg->kode_barang }}</td>
+                                    <td class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $brg->jumlah_total > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $brg->jumlah_total }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-4 text-right whitespace-nowrap" x-show="columns.includes('harga')">
+                                        @if($brg->harga_perolehan) Rp {{ number_format($brg->harga_perolehan, 0, ',', '.') }} @else - @endif
+                                    </td>
+                                    <td class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700" title="Baik">{{ $brg->jumlah_baik }}</span>
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-amber-50 text-amber-700" title="Rusak Ringan">{{ $brg->jumlah_rusak_ringan }}</span>
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-rose-50 text-rose-700" title="Rusak Berat">{{ $brg->jumlah_rusak_berat }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm" x-show="columns.includes('supplier')">{{ $brg->supplier->nama_supplier ?? '-' }}</td>
+                                    <td class="px-4 py-4 max-w-[150px] truncate text-xs text-slate-500" x-show="columns.includes('mutasi')">{{ $brg->keterangan_mutasi ?? '-' }}</td>
+                                    <td class="px-4 py-4 text-right">
+                                        <div class="flex justify-end space-x-1">
+                                            <a href="{{ route('barangs.units', $brg) }}" class="inline-flex items-center px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors text-xs font-medium">Unit</a>
+                                            <a href="{{ route('barangs.show', $brg) }}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-xs font-medium">Detail</a>
+                                            <a href="{{ route('barangs.edit', $brg) }}" class="inline-flex items-center px-2.5 py-1.5 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors text-xs font-medium">Edit</a>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                             @if($ruangan->barangs->isEmpty())
                             <tr>
