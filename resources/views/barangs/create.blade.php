@@ -79,19 +79,23 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-3">Keadaan Barang (Jumlah)</label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                            <label for="jumlah_baik" class="block text-xs font-bold text-emerald-700 mb-2">Baik</label>
-                            <input type="number" name="jumlah_baik" id="jumlah_baik" min="0" value="{{ old('jumlah_baik', 0) }}" class="w-full px-4 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 outline-none transition-all text-center text-lg font-bold text-emerald-700" required>
-                            @error('jumlah_baik') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 relative group overflow-hidden">
+                            <div class="absolute inset-0 bg-white/40 z-0"></div>
+                            <label for="jumlah_baik" class="block text-xs font-bold text-emerald-700 mb-2 relative z-10 flex justify-between">
+                                <span>Baik</span>
+                                <span class="bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded text-[10px] font-bold">Otomatis</span>
+                            </label>
+                            <input type="number" name="jumlah_baik" id="jumlah_baik" min="0" x-model.number="jumlahBaik" readonly class="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none transition-all text-center text-lg font-bold text-emerald-700 cursor-not-allowed relative z-10" required>
+                            @error('jumlah_baik') <p class="mt-2 text-xs text-rose-500 font-medium relative z-10">{{ $message }}</p> @enderror
                         </div>
                         <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
                             <label for="jumlah_rusak_ringan" class="block text-xs font-bold text-amber-700 mb-2">Rusak Ringan</label>
-                            <input type="number" name="jumlah_rusak_ringan" id="jumlah_rusak_ringan" min="0" value="{{ old('jumlah_rusak_ringan', 0) }}" class="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-400 outline-none transition-all text-center text-lg font-bold text-amber-700" required>
+                            <input type="number" name="jumlah_rusak_ringan" id="jumlah_rusak_ringan" min="0" x-model.number="jumlahRusakRingan" class="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-400 outline-none transition-all text-center text-lg font-bold text-amber-700" required>
                             @error('jumlah_rusak_ringan') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                         </div>
                         <div class="bg-rose-50 rounded-xl p-4 border border-rose-100">
                             <label for="jumlah_rusak_berat" class="block text-xs font-bold text-rose-700 mb-2">Rusak Berat</label>
-                            <input type="number" name="jumlah_rusak_berat" id="jumlah_rusak_berat" min="0" value="{{ old('jumlah_rusak_berat', 0) }}" class="w-full px-4 py-3 bg-white border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-center text-lg font-bold text-rose-700" required>
+                            <input type="number" name="jumlah_rusak_berat" id="jumlah_rusak_berat" min="0" x-model.number="jumlahRusakBerat" class="w-full px-4 py-3 bg-white border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-100 focus:border-rose-400 outline-none transition-all text-center text-lg font-bold text-rose-700" required>
                             @error('jumlah_rusak_berat') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -135,7 +139,7 @@
                                 </div>
                                 <div class="w-32">
                                     <label class="block text-xs font-semibold text-slate-500 mb-1.5">Jumlah</label>
-                                    <input type="number" :name="'lokasi[' + index + '][jumlah]'" x-model="lok.jumlah" min="1" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm text-center font-semibold" required>
+                                    <input type="number" :name="'lokasi[' + index + '][jumlah]'" x-model.number="lok.jumlah" min="1" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm text-center font-semibold" required>
                                 </div>
                                 <div class="pt-6">
                                     <button type="button" @click="removeLokasi(index)" x-show="lokasiList.length > 1" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Hapus lokasi">
@@ -186,6 +190,31 @@ function barangForm() {
 
     return {
         lokasiList: initialLokasi,
+        jumlahBaik: {{ old('jumlah_baik', 0) }},
+        jumlahRusakRingan: {{ old('jumlah_rusak_ringan', 0) }},
+        jumlahRusakBerat: {{ old('jumlah_rusak_berat', 0) }},
+        
+        get totalLokasi() {
+            return this.lokasiList.reduce((sum, item) => sum + (parseInt(item.jumlah) || 0), 0);
+        },
+
+        init() {
+            this.$watch('lokasiList', () => this.syncBaik(), { deep: true });
+            this.$watch('jumlahRusakRingan', () => this.syncBaik());
+            this.$watch('jumlahRusakBerat', () => this.syncBaik());
+            this.syncBaik(); // Initial sync
+        },
+
+        syncBaik() {
+            let currentTotalLokasi = this.totalLokasi;
+            let otherCond = parseInt(this.jumlahRusakRingan || 0) + parseInt(this.jumlahRusakBerat || 0);
+            if (currentTotalLokasi >= otherCond) {
+                this.jumlahBaik = currentTotalLokasi - otherCond;
+            } else {
+                this.jumlahBaik = 0;
+            }
+        },
+
         addLokasi() {
             this.lokasiList.push({ ruangan_id: '', jumlah: 1 });
         },
