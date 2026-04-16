@@ -14,7 +14,16 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barangs = Barang::with(['supplier', 'ruangans'])->get();
+        $query = Barang::with(['supplier', 'ruangans']);
+        $user = auth()->user();
+
+        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+            $query->whereHas('ruangans', function ($q) use ($user) {
+                $q->where('jurusan_id', $user->jurusan_id);
+            });
+        }
+
+        $barangs = $query->latest()->get();
         $suppliers = Supplier::all();
         return view('barangs.index', compact('barangs', 'suppliers'));
     }
@@ -22,7 +31,13 @@ class BarangController extends Controller
     public function create()
     {
         $suppliers = Supplier::all();
-        $ruangans = Ruangan::all();
+        $user = auth()->user();
+        
+        $ruangansQuery = Ruangan::query();
+        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+        }
+        $ruangans = $ruangansQuery->get();
         $preLokasiId = request('lokasi_id');
         $redirectTo = request('redirect_to');
         return view('barangs.create', compact('suppliers', 'ruangans', 'preLokasiId', 'redirectTo'));
@@ -124,7 +139,13 @@ class BarangController extends Controller
     public function edit(Barang $barang)
     {
         $suppliers = Supplier::all();
-        $ruangans = Ruangan::all();
+        $user = auth()->user();
+
+        $ruangansQuery = Ruangan::query();
+        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+        }
+        $ruangans = $ruangansQuery->get();
         $barang->load('ruangans');
         return view('barangs.edit', compact('barang', 'suppliers', 'ruangans'));
     }
