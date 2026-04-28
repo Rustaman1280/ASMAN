@@ -6,6 +6,7 @@ use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\MutasiController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -26,8 +27,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('jurusans', JurusanController::class);
         Route::resource('ruangans', RuanganController::class);
         Route::resource('suppliers', SupplierController::class);
-        Route::resource('barangs', BarangController::class);
-        Route::put('unit-barangs/{unitBarang}', [BarangController::class, 'updateUnit'])->name('unit-barangs.update');
+        Route::resource('barangs', BarangController::class)->only(['index', 'show']);
+        
+        Route::get('mutasi', [MutasiController::class, 'index'])->name('mutasi.index');
+        Route::get('mutasi/create', [MutasiController::class, 'create'])->name('mutasi.create');
+        Route::post('mutasi', [MutasiController::class, 'store'])->name('mutasi.store');
+
         Route::get('barangs/{barang}/units', [BarangController::class, 'units'])->name('barangs.units');
         Route::get('barangs-export', [BarangController::class, 'export'])->name('barangs.export');
         Route::post('barangs-import', [BarangController::class, 'import'])->name('barangs.import');

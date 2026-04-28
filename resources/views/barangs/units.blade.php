@@ -21,10 +21,7 @@
                     Semua Unit
                 </a>
             @endif
-            <a href="{{ route('barangs.edit', $barang) }}" class="inline-flex items-center px-4 py-2 border border-slate-200 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">
-                Edit Jumlah Utama
-            </a>
-        </div>
+            <!-- Edit Jumlah Utama dihapus -->
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
@@ -61,44 +58,11 @@
                     </div>
 
                     {{-- Text Display Mode --}}
-                    <div x-show="!isEditing" class="flex flex-col flex-grow">
+                    <div class="flex flex-col flex-grow">
                         <p class="text-sm text-slate-600 mb-4 flex-grow">{{ $unit->keterangan ?? 'Tidak ada catatan tambahan.' }}</p>
                         <div class="pt-3 border-t border-slate-100 flex justify-end">
-                            <button type="button" @click="isEditing = true" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">Edit Unit</button>
+                            <a href="{{ route('mutasi.create', ['unit_id' => $unit->id]) }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">Mutasi Unit</a>
                         </div>
-                    </div>
-
-                    {{-- Edit Form Mode --}}
-                    <div x-show="isEditing" style="display: none;" class="flex flex-col flex-grow">
-                        <form action="{{ route('unit-barangs.update', $unit) }}" method="POST" class="flex flex-col flex-grow">
-                            @csrf
-                            @method('PUT')
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Kondisi</label>
-                                <select name="kondisi" class="w-full text-xs border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
-                                    <option value="baik" {{ $unit->kondisi == 'baik' ? 'selected' : '' }}>Baik</option>
-                                    <option value="rusak_ringan" {{ $unit->kondisi == 'rusak_ringan' ? 'selected' : '' }}>Rusak Ringan</option>
-                                    <option value="rusak_berat" {{ $unit->kondisi == 'rusak_berat' ? 'selected' : '' }}>Rusak Berat</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Lokasi</label>
-                                <select name="ruangan_id" class="w-full text-xs border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50">
-                                    <option value="">-- Belum Ditentukan --</option>
-                                    @foreach($ruangans as $ruangan)
-                                        <option value="{{ $ruangan->id }}" {{ $unit->ruangan_id == $ruangan->id ? 'selected' : '' }}>{{ $ruangan->nama }} ({{ $ruangan->jenis_ruangan }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3 flex-grow">
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan</label>
-                                <textarea name="keterangan" rows="2" class="w-full text-xs border-slate-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50" placeholder="Catatan spesifik unit ini...">{{ $unit->keterangan }}</textarea>
-                            </div>
-                            <div class="pt-2 flex justify-end gap-2 mt-auto">
-                                <button type="button" @click="isEditing = false" class="text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors">Batal</button>
-                                <button type="submit" class="text-xs font-semibold px-3 py-1.5 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors">Simpan</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
                 @empty

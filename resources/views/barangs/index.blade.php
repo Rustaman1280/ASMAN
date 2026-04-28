@@ -51,11 +51,7 @@
                             </template>
                         </div>
                     </div>
-                    {{-- Tambah --}}
-                    <a href="{{ route('barangs.create') }}" class="inline-flex items-center px-3.5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah
-                    </a>
+                    <!-- Tombol Tambah dihapus, diarahkan ke Mutasi -->
                 </div>
             </div>
 
@@ -162,12 +158,6 @@
                             <div class="flex justify-end space-x-1">
                                 <a href="{{ route('barangs.units', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors text-xs font-medium">Unit</a>
                                 <a href="{{ route('barangs.show', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-xs font-medium">Detail</a>
-                                <a href="{{ route('barangs.edit', $barang) }}" class="inline-flex items-center px-2.5 py-1.5 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors text-xs font-medium">Edit</a>
-                                <form action="{{ route('barangs.destroy', $barang) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-xs font-medium">Hapus</button>
-                                </form>
                             </div>
                         </td>
                     </tr>
