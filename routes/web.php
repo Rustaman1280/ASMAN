@@ -27,8 +27,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('jurusans', JurusanController::class);
         Route::resource('ruangans', RuanganController::class);
         Route::resource('suppliers', SupplierController::class);
-        Route::resource('barangs', BarangController::class)->only(['index', 'show']);
+        Route::resource('barangs', BarangController::class);
         
+        Route::get('mutasi/export', [MutasiController::class, 'export'])->name('mutasi.export');
         Route::get('mutasi', [MutasiController::class, 'index'])->name('mutasi.index');
         Route::get('mutasi/create', [MutasiController::class, 'create'])->name('mutasi.create');
         Route::post('mutasi', [MutasiController::class, 'store'])->name('mutasi.store');

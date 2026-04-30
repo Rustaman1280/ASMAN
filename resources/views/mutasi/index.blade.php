@@ -6,10 +6,59 @@
 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h3 class="text-lg font-semibold text-slate-800">Daftar Mutasi</h3>
-        <a href="{{ route('mutasi.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Buat Mutasi Baru
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('mutasi.export', request()->query()) }}" class="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Export Excel
+            </a>
+            <a href="{{ route('mutasi.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Buat Mutasi Baru
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter & Search -->
+    <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+        <form action="{{ route('mutasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cari Barang / Keterangan</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik kata kunci..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jenis Mutasi</label>
+                <select name="jenis_mutasi" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                    <option value="">Semua Jenis</option>
+                    <option value="penambahan" {{ request('jenis_mutasi') === 'penambahan' ? 'selected' : '' }}>Penambahan</option>
+                    <option value="ubah_status" {{ request('jenis_mutasi') === 'ubah_status' ? 'selected' : '' }}>Ubah Status</option>
+                    <option value="ubah_lokasi" {{ request('jenis_mutasi') === 'ubah_lokasi' ? 'selected' : '' }}>Ubah Lokasi</option>
+                    <option value="peminjaman" {{ request('jenis_mutasi') === 'peminjaman' ? 'selected' : '' }}>Peminjaman</option>
+                    <option value="pengembalian" {{ request('jenis_mutasi') === 'pengembalian' ? 'selected' : '' }}>Pengembalian</option>
+                    <option value="penghapusan" {{ request('jenis_mutasi') === 'penghapusan' ? 'selected' : '' }}>Penghapusan</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mulai Tanggal</label>
+                <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="flex-1">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Sampai</label>
+                    <input type="date" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                </div>
+                <button type="submit" class="mt-5 px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-colors text-sm font-medium">Filter</button>
+                @if(request()->anyFilled(['search', 'jenis_mutasi', 'tanggal_mulai', 'tanggal_akhir']))
+                    <a href="{{ route('mutasi.index') }}" class="mt-5 px-3 py-2 bg-slate-200 text-slate-600 rounded-xl hover:bg-slate-300 transition-colors text-sm font-medium" title="Reset Filter">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <div class="overflow-x-auto">
@@ -28,7 +77,7 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse($mutasis as $mutasi)
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-4 text-center text-slate-500">{{ $loop->iteration }}</td>
+                    <td class="px-4 py-4 text-center text-slate-500">{{ $mutasis->firstItem() + $loop->index }}</td>
                     <td class="px-4 py-4 font-medium text-slate-900 whitespace-nowrap">{{ \Carbon\Carbon::parse($mutasi->tanggal_mutasi)->format('d M Y') }}</td>
                     <td class="px-4 py-4">
                         @php
@@ -79,5 +128,11 @@
             </tbody>
         </table>
     </div>
+
+    @if($mutasis->hasPages())
+    <div class="p-4 border-t border-slate-100">
+        {{ $mutasis->links() }}
+    </div>
+    @endif
 </div>
 @endsection

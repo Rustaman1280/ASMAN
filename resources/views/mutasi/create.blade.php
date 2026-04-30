@@ -37,7 +37,12 @@
 
             <!-- Pilih Barang (Hanya untuk Penambahan) -->
             <div x-show="jenisMutasi === 'penambahan'" x-cloak class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-4">
-                <h4 class="text-sm font-bold text-emerald-800 uppercase tracking-wider">Detail Penambahan Unit</h4>
+                <div class="flex justify-between items-center">
+                    <h4 class="text-sm font-bold text-emerald-800 uppercase tracking-wider">Detail Penambahan Unit</h4>
+                    <a href="{{ route('barangs.create', ['redirect_to' => url()->current() . '?jenis=penambahan']) }}" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-all font-semibold shadow-sm">
+                        + Tambah Barang Baru
+                    </a>
+                </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Tipe Barang <span class="text-rose-500">*</span></label>
                     <select name="barang_id" :required="jenisMutasi === 'penambahan'"
@@ -48,7 +53,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Kondisi Awal <span class="text-rose-500">*</span></label>
                         <select name="kondisi" :required="jenisMutasi === 'penambahan'"
@@ -67,6 +72,11 @@
                                 <option value="{{ $ruangan->id }}">{{ $ruangan->nama }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Jumlah Unit <span class="text-rose-500">*</span></label>
+                        <input type="number" name="jumlah_unit" min="1" value="1" :required="jenisMutasi === 'penambahan'"
+                               class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
                     </div>
                 </div>
             </div>

@@ -10,17 +10,87 @@ use App\Models\Ruangan;
 
 class MutasiController extends Controller
 {
-    public function index()
+    private function buildQuery(Request $request)
     {
-        $mutasis = Mutasi::with(['barang', 'unitBarang', 'user', 'ruanganAwal', 'ruanganAkhir'])->latest()->get();
+        $query = Mutasi::with(['barang', 'unitBarang', 'user', 'ruanganAwal', 'ruanganAkhir'])->latest();
+        $user = auth()->user();
+
+        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('ruanganAwal', function ($sq) use ($user) {
+                    $sq->where('jurusan_id', $user->jurusan_id);
+                })->orWhereHas('ruanganAkhir', function ($sq) use ($user) {
+                    $sq->where('jurusan_id', $user->jurusan_id);
+                })->orWhereHas('unitBarang.ruangan', function ($sq) use ($user) {
+                    $sq->where('jurusan_id', $user->jurusan_id);
+                })->orWhereHas('barang.ruangans', function ($sq) use ($user) {
+                    $sq->where('jurusan_id', $user->jurusan_id);
+                });
+            });
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('barang', function ($sq) use ($search) {
+                    $sq->where('nama_barang', 'like', "%{$search}%")
+                       ->orWhere('kode_barang', 'like', "%{$search}%");
+                })->orWhereHas('unitBarang', function ($sq) use ($search) {
+                    $sq->where('kode_unit', 'like', "%{$search}%");
+                })->orWhere('keterangan', 'like', "%{$search}%")
+                  ->orWhere('nama_peminjam', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('jenis_mutasi')) {
+            $query->where('jenis_mutasi', $request->jenis_mutasi);
+        }
+
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate('tanggal_mutasi', '>=', $request->tanggal_mulai);
+        }
+
+        if ($request->filled('tanggal_akhir')) {
+            $query->whereDate('tanggal_mutasi', '<=', $request->tanggal_akhir);
+        }
+
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $query = $this->buildQuery($request);
+        $mutasis = $query->paginate(15)->withQueryString();
         return view('mutasi.index', compact('mutasis'));
+    }
+
+    public function export(Request $request)
+    {
+        $query = $this->buildQuery($request);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MutasiExport($query), 'data-mutasi-' . date('Y-m-d') . '.xlsx');
     }
 
     public function create(Request $request)
     {
-        $barangs = Barang::all();
-        $unitBarangs = UnitBarang::with(['barang', 'ruangan'])->get();
-        $ruangans = Ruangan::all();
+        $user = auth()->user();
+        
+        $barangsQuery = Barang::query();
+        $unitBarangsQuery = UnitBarang::with(['barang', 'ruangan']);
+        $ruangansQuery = Ruangan::query();
+
+        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+            $barangsQuery->whereHas('ruangans', function ($q) use ($user) {
+                $q->where('jurusan_id', $user->jurusan_id);
+            });
+            $unitBarangsQuery->whereHas('ruangan', function ($q) use ($user) {
+                $q->where('jurusan_id', $user->jurusan_id);
+            });
+        }
+
+        $barangs = $barangsQuery->get();
+        $unitBarangs = $unitBarangsQuery->get();
+        $ruangans = $ruangansQuery->get();
         $preselectedUnitId = $request->query('unit_id');
         $preselectedJenis = $request->query('jenis');
 
@@ -41,47 +111,52 @@ class MutasiController extends Controller
             'ruangan_akhir_id' => 'required_if:jenis_mutasi,ubah_lokasi|nullable|exists:ruangans,id',
             'nama_peminjam' => 'required_if:jenis_mutasi,peminjaman|nullable|string|max:255',
             'tanggal_kembali' => 'nullable|date',
+            'jumlah_unit' => 'required_if:jenis_mutasi,penambahan|nullable|integer|min:1',
         ]);
 
         $jenis = $request->jenis_mutasi;
 
         if ($jenis === 'penambahan') {
             $barang = Barang::findOrFail($request->barang_id);
-            $count = \App\Models\UnitBarang::where('barang_id', $barang->id)->count();
-            $kodeUnit = $barang->kode_barang . '-' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+            $jumlahUnit = max(1, (int) $request->input('jumlah_unit', 1));
             
-            $unit = UnitBarang::create([
-                'barang_id' => $barang->id,
-                'kode_unit' => $kodeUnit,
-                'kondisi' => $request->kondisi,
-                'ruangan_id' => $request->ruangan_id
-            ]);
+            for ($i = 0; $i < $jumlahUnit; $i++) {
+                $count = \App\Models\UnitBarang::where('barang_id', $barang->id)->count();
+                $kodeUnit = $barang->kode_barang . '-' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+                
+                $unit = UnitBarang::create([
+                    'barang_id' => $barang->id,
+                    'kode_unit' => $kodeUnit,
+                    'kondisi' => $request->kondisi,
+                    'ruangan_id' => $request->ruangan_id
+                ]);
+
+                Mutasi::create([
+                    'barang_id' => $barang->id,
+                    'unit_barang_id' => $unit->id,
+                    'user_id' => auth()->id(),
+                    'jenis_mutasi' => 'penambahan',
+                    'keterangan' => $request->keterangan,
+                    'tanggal_mutasi' => $request->tanggal_mutasi,
+                    'status_akhir' => $request->kondisi,
+                    'ruangan_akhir_id' => $request->ruangan_id,
+                ]);
+            }
 
             $col = 'jumlah_' . $request->kondisi;
-            $barang->$col += 1;
+            $barang->$col += $jumlahUnit;
             $barang->save();
 
             if ($request->ruangan_id) {
                 $pivot = $barang->ruangans()->where('ruangan_id', $request->ruangan_id)->first();
                 if ($pivot) {
-                    $barang->ruangans()->updateExistingPivot($request->ruangan_id, ['jumlah' => $pivot->pivot->jumlah + 1]);
+                    $barang->ruangans()->updateExistingPivot($request->ruangan_id, ['jumlah' => $pivot->pivot->jumlah + $jumlahUnit]);
                 } else {
-                    $barang->ruangans()->attach($request->ruangan_id, ['jumlah' => 1]);
+                    $barang->ruangans()->attach($request->ruangan_id, ['jumlah' => $jumlahUnit]);
                 }
             }
 
-            Mutasi::create([
-                'barang_id' => $barang->id,
-                'unit_barang_id' => $unit->id,
-                'user_id' => auth()->id(),
-                'jenis_mutasi' => 'penambahan',
-                'keterangan' => $request->keterangan,
-                'tanggal_mutasi' => $request->tanggal_mutasi,
-                'status_akhir' => $request->kondisi,
-                'ruangan_akhir_id' => $request->ruangan_id,
-            ]);
-
-            return redirect()->route('mutasi.index')->with('success', 'Berhasil menambahkan unit barang baru.');
+            return redirect()->route('mutasi.index')->with('success', "Berhasil menambahkan {$jumlahUnit} unit barang baru.");
         }
 
         $unit = UnitBarang::findOrFail($request->unit_barang_id);

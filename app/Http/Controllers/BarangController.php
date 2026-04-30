@@ -216,15 +216,17 @@ class BarangController extends Controller
         $existingCount = $b->unitBarangs()->count();
         $targetCount = count($kondisis);
         
+        $newUnitIds = [];
         if ($existingCount < $targetCount) {
             foreach ($kondisis as $i => $k) {
                 if ($i < $existingCount) continue;
                 $kodeUnit = $b->kode_barang . '-' . str_pad($i + 1, 3, '0', STR_PAD_LEFT);
-                \App\Models\UnitBarang::create([
+                $unit = \App\Models\UnitBarang::create([
                     'barang_id' => $b->id,
                     'kode_unit' => $kodeUnit,
                     'kondisi' => $k
                 ]);
+                $newUnitIds[] = $unit->id;
             }
         } elseif ($existingCount > $targetCount) {
              // For deletions, we truncate the overflow units.
@@ -247,6 +249,24 @@ class BarangController extends Controller
                     $units[$unitIdx]->save();
                     $unitIdx++;
                 }
+            }
+        }
+
+        // Create mutasi history for newly added units
+        if (!empty($newUnitIds)) {
+            $userId = auth()->id();
+            $freshNewUnits = \App\Models\UnitBarang::whereIn('id', $newUnitIds)->get();
+            foreach ($freshNewUnits as $unit) {
+                \App\Models\Mutasi::create([
+                    'barang_id' => $b->id,
+                    'unit_barang_id' => $unit->id,
+                    'user_id' => $userId,
+                    'jenis_mutasi' => 'penambahan',
+                    'keterangan' => $b->keterangan_mutasi ?? 'Penambahan unit otomatis dari data barang.',
+                    'tanggal_mutasi' => date('Y-m-d'),
+                    'status_akhir' => $unit->kondisi,
+                    'ruangan_akhir_id' => $unit->ruangan_id,
+                ]);
             }
         }
     }
