@@ -15,16 +15,16 @@ class MutasiController extends Controller
         $query = Mutasi::with(['barang', 'unitBarang', 'user', 'ruanganAwal', 'ruanganAkhir'])->latest();
         $user = auth()->user();
 
-        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+        if ($user && $user->isPjRuangan()) {
             $query->where(function ($q) use ($user) {
                 $q->whereHas('ruanganAwal', function ($sq) use ($user) {
-                    $sq->where('jurusan_id', $user->jurusan_id);
+                    $sq->whereIn('id', $user->ruangans->pluck('id'));
                 })->orWhereHas('ruanganAkhir', function ($sq) use ($user) {
-                    $sq->where('jurusan_id', $user->jurusan_id);
+                    $sq->whereIn('id', $user->ruangans->pluck('id'));
                 })->orWhereHas('unitBarang.ruangan', function ($sq) use ($user) {
-                    $sq->where('jurusan_id', $user->jurusan_id);
+                    $sq->whereIn('id', $user->ruangans->pluck('id'));
                 })->orWhereHas('barang.ruangans', function ($sq) use ($user) {
-                    $sq->where('jurusan_id', $user->jurusan_id);
+                    $sq->whereIn('id', $user->ruangans->pluck('id'));
                 });
             });
         }
@@ -84,13 +84,13 @@ class MutasiController extends Controller
         $unitBarangsQuery = UnitBarang::with(['barang', 'ruangan']);
         $ruangansQuery = Ruangan::query();
 
-        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
-            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+        if ($user && $user->isPjRuangan()) {
+            $ruangansQuery->whereIn('id', $user->ruangans->pluck('id'));
             $barangsQuery->whereHas('ruangans', function ($q) use ($user) {
-                $q->where('jurusan_id', $user->jurusan_id);
+                $q->whereIn('id', $user->ruangans->pluck('id'));
             });
             $unitBarangsQuery->whereHas('ruangan', function ($q) use ($user) {
-                $q->where('jurusan_id', $user->jurusan_id);
+                $q->whereIn('id', $user->ruangans->pluck('id'));
             });
         }
 

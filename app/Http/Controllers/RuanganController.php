@@ -19,8 +19,8 @@ class RuanganController extends Controller
             $query->where('jenis_ruangan', $jenis);
         }
 
-        if ($user->role === 'guru_jurusan') {
-            $query->where('jurusan_id', $user->jurusan_id);
+        if ($user->isPjRuangan()) {
+            $query->whereIn('id', $user->ruangans->pluck('id'));
         }
 
         $ruangans = $query->get();
@@ -34,8 +34,8 @@ class RuanganController extends Controller
         }
 
         $user = auth()->user();
-        $jurusans = $user->role === 'guru_jurusan' 
-            ? Jurusan::where('id', $user->jurusan_id)->get() 
+        $jurusans = $user->isPjRuangan() 
+            ? Jurusan::whereIn('id', $user->ruangans->pluck('jurusan_id')->filter()->unique())->get() 
             : Jurusan::all();
 
         $jenis = $request->query('jenis', '');
@@ -57,11 +57,15 @@ class RuanganController extends Controller
             'jurusan_id' => 'nullable|exists:jurusans,id',
         ]);
 
-        if (auth()->user()->role === 'guru_jurusan' && $request->jurusan_id != auth()->user()->jurusan_id) {
-            abort(403, 'Anda hanya dapat menambahkan ruangan untuk jurusan Anda sendiri.');
+        if (auth()->user()->isPjRuangan() && $request->filled('jurusan_id') && !auth()->user()->ruangans->pluck('jurusan_id')->contains($request->jurusan_id)) {
+            abort(403, 'Anda hanya dapat menambahkan ruangan untuk jurusan yang sudah ada di ruangan kelolaan Anda.');
         }
 
-        Ruangan::create($request->all());
+        $ruangan = Ruangan::create($request->all());
+
+        if (auth()->user()->isPjRuangan()) {
+            auth()->user()->ruangans()->attach($ruangan->id);
+        }
 
         return redirect()->route('ruangans.index', ['jenis' => $request->jenis_ruangan])
                          ->with('success', 'Ruangan berhasil ditambahkan.');
@@ -79,13 +83,13 @@ class RuanganController extends Controller
             abort(403);
         }
 
-        if (auth()->user()->role === 'guru_jurusan' && $ruangan->jurusan_id !== auth()->user()->jurusan_id) {
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->contains($ruangan->id)) {
             abort(403);
         }
 
         $user = auth()->user();
-        $jurusans = $user->role === 'guru_jurusan' 
-            ? Jurusan::where('id', $user->jurusan_id)->get() 
+        $jurusans = $user->isPjRuangan() 
+            ? Jurusan::whereIn('id', $user->ruangans->pluck('jurusan_id')->filter()->unique())->get() 
             : Jurusan::all();
 
         return view('ruangan.edit', compact('ruangan', 'jurusans'));
@@ -97,7 +101,7 @@ class RuanganController extends Controller
             abort(403);
         }
 
-        if (auth()->user()->role === 'guru_jurusan' && $ruangan->jurusan_id !== auth()->user()->jurusan_id) {
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->contains($ruangan->id)) {
             abort(403);
         }
 
@@ -109,8 +113,8 @@ class RuanganController extends Controller
             'jurusan_id' => 'nullable|exists:jurusans,id',
         ]);
 
-        if (auth()->user()->role === 'guru_jurusan' && $request->jurusan_id != auth()->user()->jurusan_id) {
-            abort(403, 'Anda hanya dapat memindahkan ruangan ke jurusan Anda sendiri.');
+        if (auth()->user()->isPjRuangan() && $request->filled('jurusan_id') && !auth()->user()->ruangans->pluck('jurusan_id')->contains($request->jurusan_id)) {
+            abort(403, 'Anda hanya dapat memindahkan ruangan ke jurusan yang ada di ruangan kelolaan Anda.');
         }
 
         $ruangan->update($request->all());
@@ -125,7 +129,7 @@ class RuanganController extends Controller
             abort(403);
         }
 
-        if (auth()->user()->role === 'guru_jurusan' && $ruangan->jurusan_id !== auth()->user()->jurusan_id) {
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->contains($ruangan->id)) {
             abort(403);
         }
 

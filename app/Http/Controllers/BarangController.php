@@ -17,9 +17,9 @@ class BarangController extends Controller
         $query = Barang::with(['supplier', 'ruangans']);
         $user = auth()->user();
 
-        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
+        if ($user && $user->isPjRuangan()) {
             $query->whereHas('ruangans', function ($q) use ($user) {
-                $q->where('jurusan_id', $user->jurusan_id);
+                $q->whereIn('id', $user->ruangans->pluck('id'));
             });
         }
 
@@ -65,8 +65,8 @@ class BarangController extends Controller
         $user = auth()->user();
         
         $ruangansQuery = Ruangan::query();
-        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
-            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+        if ($user && $user->isPjRuangan()) {
+            $ruangansQuery->whereIn('id', $user->ruangans->pluck('id'));
         }
         $ruangans = $ruangansQuery->get();
         $preLokasiId = request('lokasi_id');
@@ -173,8 +173,8 @@ class BarangController extends Controller
         $user = auth()->user();
 
         $ruangansQuery = Ruangan::query();
-        if ($user && $user->role === 'guru_jurusan' && $user->jurusan_id) {
-            $ruangansQuery->where('jurusan_id', $user->jurusan_id);
+        if ($user && $user->isPjRuangan()) {
+            $ruangansQuery->whereIn('id', $user->ruangans->pluck('id'));
         }
         $ruangans = $ruangansQuery->get();
         $barang->load('ruangans');

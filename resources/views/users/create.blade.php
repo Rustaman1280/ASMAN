@@ -55,15 +55,22 @@
                 @enderror
             </div>
 
-            <div class="mb-6 {{ old('role') == 'guru_jurusan' ? '' : 'hidden' }}" id="jurusan_container">
-                <label for="jurusan_id" class="block text-sm font-medium text-slate-700 mb-1">Jurusan (Khusus Guru Jurusan)</label>
-                <select name="jurusan_id" id="jurusan_id" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                    <option value="">Pilih Jurusan</option>
-                    @foreach($jurusans as $jurusan)
-                        <option value="{{ $jurusan->id }}" {{ old('jurusan_id') == $jurusan->id ? 'selected' : '' }}>{{ $jurusan->nama }}</option>
-                    @endforeach
-                </select>
-                @error('jurusan_id')
+            <div class="mb-6 {{ old('role') == 'pj_ruangan' ? '' : 'hidden' }}" id="ruangan_container">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Ruangan (Bisa pilih lebih dari satu)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-3 border border-slate-200 rounded-lg bg-slate-50">
+                    @forelse($ruangans as $ruangan)
+                        <label class="flex items-start space-x-3 cursor-pointer p-2 hover:bg-slate-100 rounded transition-colors">
+                            <input type="checkbox" name="ruangans[]" value="{{ $ruangan->id }}" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" {{ is_array(old('ruangans')) && in_array($ruangan->id, old('ruangans')) ? 'checked' : '' }}>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-slate-800">{{ $ruangan->nama }}</span>
+                                <span class="text-xs text-slate-500">{{ $ruangan->jenis_ruangan }}</span>
+                            </div>
+                        </label>
+                    @empty
+                        <div class="col-span-2 text-sm text-slate-500 text-center py-2">Belum ada data ruangan.</div>
+                    @endforelse
+                </div>
+                @error('ruangans')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
@@ -79,8 +86,8 @@
 <script>
     function toggleJurusan() {
         const role = document.getElementById('role').value;
-        const container = document.getElementById('jurusan_container');
-        if (role === 'guru_jurusan') {
+        const container = document.getElementById('ruangan_container');
+        if (role === 'pj_ruangan') {
             container.classList.remove('hidden');
         } else {
             container.classList.add('hidden');

@@ -53,15 +53,20 @@ class User extends Authenticatable
         return $this->belongsTo(Jurusan::class);
     }
 
+    public function ruangans()
+    {
+        return $this->belongsToMany(Ruangan::class);
+    }
+
     // Role Checks
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
-    public function isGuruJurusan()
+    public function isPjRuangan()
     {
-        return $this->role === 'guru_jurusan';
+        return $this->role === 'pj_ruangan';
     }
 
     public function isWakilKepsek()
@@ -82,7 +87,7 @@ class User extends Authenticatable
     // Permissions
     public function canEdit()
     {
-        return in_array($this->role, ['admin', 'guru_jurusan', 'wakil_kepsek']);
+        return in_array($this->role, ['admin', 'pj_ruangan', 'wakil_kepsek']);
     }
 
     public function canManageUsers()

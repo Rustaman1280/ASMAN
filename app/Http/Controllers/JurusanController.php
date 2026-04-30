@@ -13,8 +13,8 @@ class JurusanController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role === 'guru_jurusan') {
-            $jurusans = \App\Models\Jurusan::where('id', $user->jurusan_id)->get();
+        if ($user->isPjRuangan()) {
+            $jurusans = \App\Models\Jurusan::whereIn('id', $user->ruangans->pluck('jurusan_id')->filter()->unique())->get();
         }
         else {
             $jurusans = \App\Models\Jurusan::all();
@@ -58,9 +58,9 @@ class JurusanController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk mengubah data.');
         }
 
-        // Guru jurusan hanya bisa edit jurusannya sendiri
-        if (auth()->user()->role === 'guru_jurusan' && auth()->user()->jurusan_id !== $jurusan->id) {
-            abort(403, 'Anda hanya dapat mengubah data jurusan Anda sendiri.');
+        // PJ Ruangan hanya bisa edit jurusan dari ruangan yang dikelola
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->pluck('jurusan_id')->contains($jurusan->id)) {
+            abort(403, 'Anda hanya dapat mengubah data jurusan dari ruangan yang Anda kelola.');
         }
 
         return view('jurusan.edit', compact('jurusan'));
@@ -72,7 +72,7 @@ class JurusanController extends Controller
             abort(403);
         }
 
-        if (auth()->user()->role === 'guru_jurusan' && auth()->user()->jurusan_id !== $jurusan->id) {
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->pluck('jurusan_id')->contains($jurusan->id)) {
             abort(403);
         }
 
@@ -92,7 +92,7 @@ class JurusanController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk menghapus data.');
         }
 
-        if (auth()->user()->role === 'guru_jurusan' && auth()->user()->jurusan_id !== $jurusan->id) {
+        if (auth()->user()->isPjRuangan() && !auth()->user()->ruangans->pluck('jurusan_id')->contains($jurusan->id)) {
             abort(403);
         }
 

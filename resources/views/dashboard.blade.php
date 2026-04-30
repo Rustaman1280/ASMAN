@@ -10,7 +10,13 @@
             <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m0 10V4m0 10h1m-1 4h1m-7 10v-2a2 2 0 012-2h12a2 2 0 012 2v2"></path></svg>
             </div>
-            <span class="text-3xl font-bold text-slate-800">{{ \App\Models\Jurusan::count() }}</span>
+            <span class="text-3xl font-bold text-slate-800">
+                @if(auth()->user()->isPjRuangan())
+                    {{ \App\Models\Jurusan::whereIn('id', auth()->user()->ruangans->pluck('jurusan_id')->filter()->unique())->count() }}
+                @else
+                    {{ \App\Models\Jurusan::count() }}
+                @endif
+            </span>
         </div>
         <h4 class="text-lg font-semibold text-slate-700">Total Jurusan</h4>
         <p class="text-sm text-slate-500 mb-6">Program keahlian yang tersedia.</p>
@@ -26,7 +32,13 @@
             <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-10V4m0 10V4m0 10h1m-1 4h1m-7 10v-2a2 2 0 012-2h12a2 2 0 012 2v2"></path></svg>
             </div>
-            <span class="text-3xl font-bold text-slate-800">{{ \App\Models\Ruangan::count() }}</span>
+            <span class="text-3xl font-bold text-slate-800">
+                @if(auth()->user()->isPjRuangan())
+                    {{ auth()->user()->ruangans()->count() }}
+                @else
+                    {{ \App\Models\Ruangan::count() }}
+                @endif
+            </span>
         </div>
         <h4 class="text-lg font-semibold text-slate-700">Total Ruangan</h4>
         <p class="text-sm text-slate-500 mb-6">Fasilitas dan area sekolah.</p>
