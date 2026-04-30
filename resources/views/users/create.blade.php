@@ -57,9 +57,12 @@
 
             <div class="mb-6 {{ old('role') == 'pj_ruangan' ? '' : 'hidden' }}" id="ruangan_container">
                 <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Ruangan (Bisa pilih lebih dari satu)</label>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-3 border border-slate-200 rounded-lg bg-slate-50">
+                <div class="mb-3">
+                    <input type="text" id="search_ruangan" placeholder="Cari nama atau jenis ruangan..." class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" onkeyup="filterRuangan()">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto p-3 border border-slate-200 rounded-lg bg-slate-50" id="ruangan_list">
                     @forelse($ruangans as $ruangan)
-                        <label class="flex items-start space-x-3 cursor-pointer p-2 hover:bg-slate-100 rounded transition-colors">
+                        <label class="flex items-start space-x-3 cursor-pointer p-2 hover:bg-slate-100 rounded transition-colors ruangan-item">
                             <input type="checkbox" name="ruangans[]" value="{{ $ruangan->id }}" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" {{ is_array(old('ruangans')) && in_array($ruangan->id, old('ruangans')) ? 'checked' : '' }}>
                             <div class="flex flex-col">
                                 <span class="text-sm font-medium text-slate-800">{{ $ruangan->nama }}</span>
@@ -92,6 +95,20 @@
         } else {
             container.classList.add('hidden');
         }
+    }
+
+    function filterRuangan() {
+        const input = document.getElementById('search_ruangan').value.toLowerCase();
+        const items = document.querySelectorAll('.ruangan-item');
+        
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(input)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     }
 </script>
 @endsection
