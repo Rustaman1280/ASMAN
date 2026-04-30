@@ -64,7 +64,8 @@ class MutasiController extends Controller
     public function index(Request $request)
     {
         $query = $this->buildQuery($request);
-        $mutasis = $query->paginate(15)->withQueryString();
+        $perPage = $request->get('per_page', 15);
+        $mutasis = $query->paginate($perPage)->withQueryString();
         $admins = \App\Models\User::orderBy('name')->get();
         return view('mutasi.index', compact('mutasis', 'admins'));
     }

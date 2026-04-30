@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class BarangController extends Controller
 {
-    public function index()
+    private function buildQuery(Request $request)
     {
         $query = Barang::with(['supplier', 'ruangans']);
         $user = auth()->user();
@@ -23,7 +23,38 @@ class BarangController extends Controller
             });
         }
 
-        $barangs = $query->latest()->get();
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhere('merk_model', 'like', "%{$search}%")
+                  ->orWhereHas('supplier', function($sq) use ($search) {
+                      $sq->where('nama_supplier', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('supplier')) {
+            $query->whereHas('supplier', function($q) use ($request) {
+                $q->where('nama_supplier', $request->supplier);
+            });
+        }
+
+        if ($request->filled('keadaan')) {
+            if ($request->keadaan === 'baik') $query->where('jumlah_baik', '>', 0);
+            if ($request->keadaan === 'rusak_ringan') $query->where('jumlah_rusak_ringan', '>', 0);
+            if ($request->keadaan === 'rusak_berat') $query->where('jumlah_rusak_berat', '>', 0);
+        }
+
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $query = $this->buildQuery($request);
+        $perPage = $request->get('per_page', 15);
+        $barangs = $query->latest()->paginate($perPage)->withQueryString();
         $suppliers = Supplier::all();
         return view('barangs.index', compact('barangs', 'suppliers'));
     }
@@ -278,9 +309,10 @@ class BarangController extends Controller
         return redirect()->route('barangs.index')->with('success', 'Barang berhasil dihapus.');
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new BarangExport, 'data-barang-' . date('Y-m-d') . '.xlsx');
+        $query = $this->buildQuery($request);
+        return Excel::download(new BarangExport($query), 'data-barang-' . date('Y-m-d') . '.xlsx');
     }
 
     public function import(Request $request)

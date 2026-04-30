@@ -20,7 +20,14 @@
 
     <!-- Filter & Search -->
     <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-        <form action="{{ route('mutasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+        <form action="{{ route('mutasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tampilkan</label>
+                <div class="relative">
+                    <input type="number" name="per_page" value="{{ request('per_page', 15) }}" min="1" max="1000" class="w-full pl-4 pr-10 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" title="Jumlah Baris">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">Baris</span>
+                </div>
+            </div>
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cari Barang / Keterangan</label>
                 <div class="relative">
@@ -62,7 +69,7 @@
                 </div>
                 <button type="submit" class="mt-5 px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-colors text-sm font-medium">Filter</button>
                 @if(request()->anyFilled(['search', 'jenis_mutasi', 'tanggal_mulai', 'tanggal_akhir', 'user_id']))
-                    <a href="{{ route('mutasi.index') }}" class="mt-5 px-3 py-2 bg-slate-200 text-slate-600 rounded-xl hover:bg-slate-300 transition-colors text-sm font-medium" title="Reset Filter">
+                    <a href="{{ route('mutasi.index', ['per_page' => request('per_page')]) }}" class="mt-5 px-3 py-2 bg-slate-200 text-slate-600 rounded-xl hover:bg-slate-300 transition-colors text-sm font-medium" title="Reset Filter">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </a>
                 @endif
@@ -139,8 +146,8 @@
     </div>
 
     @if($mutasis->hasPages())
-    <div class="p-4 border-t border-slate-100">
-        {{ $mutasis->links() }}
+    <div class="p-4 border-t border-slate-100 overflow-x-auto">
+        {{ $mutasis->onEachSide(1)->links() }}
     </div>
     @endif
 </div>

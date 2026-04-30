@@ -25,7 +25,7 @@
                 <h3 class="text-lg font-semibold text-slate-800">Daftar Barang</h3>
                 <div class="flex flex-wrap items-center gap-2">
                     {{-- Export --}}
-                    <a href="{{ route('barangs.export') }}" class="inline-flex items-center px-3.5 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm">
+                    <a href="{{ route('barangs.export', request()->query()) }}" class="inline-flex items-center px-3.5 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors text-sm font-medium shadow-sm">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Export
                     </a>
@@ -60,34 +60,43 @@
             </div>
 
             {{-- Search & Filter Bar --}}
-            <div class="mt-4 flex flex-col md:flex-row gap-3">
+            <form action="{{ route('barangs.index') }}" method="GET" class="mt-4 flex flex-col md:flex-row gap-3">
+                {{-- Per Page --}}
+                <div class="relative w-32">
+                    <input type="number" name="per_page" value="{{ request('per_page', 15) }}" min="1" max="1000" class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" title="Jumlah Baris">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">Baris</span>
+                </div>
                 {{-- Search --}}
                 <div class="relative flex-1">
                     <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" x-model="search" placeholder="Cari nama, kode, merk, supplier..."
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, kode, merk, supplier..."
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
                 </div>
                 {{-- Filter Supplier --}}
-                <select x-model="filterSupplier" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[180px]">
+                <select name="supplier" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[180px]">
                     <option value="">Semua Supplier</option>
                     @foreach($suppliers as $supplier)
-                        <option value="{{ $supplier->nama_supplier }}">{{ $supplier->nama_supplier }}</option>
+                        <option value="{{ $supplier->nama_supplier }}" {{ request('supplier') == $supplier->nama_supplier ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
                     @endforeach
                 </select>
                 {{-- Filter Keadaan --}}
-                <select x-model="filterKeadaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[160px]">
+                <select name="keadaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[160px]">
                     <option value="">Semua Keadaan</option>
-                    <option value="baik">Ada Baik</option>
-                    <option value="rusak_ringan">Ada Rusak Ringan</option>
-                    <option value="rusak_berat">Ada Rusak Berat</option>
+                    <option value="baik" {{ request('keadaan') == 'baik' ? 'selected' : '' }}>Ada Baik</option>
+                    <option value="rusak_ringan" {{ request('keadaan') == 'rusak_ringan' ? 'selected' : '' }}>Ada Rusak Ringan</option>
+                    <option value="rusak_berat" {{ request('keadaan') == 'rusak_berat' ? 'selected' : '' }}>Ada Rusak Berat</option>
                 </select>
-                {{-- Reset --}}
-                <button @click="search=''; filterSupplier=''; filterKeadaan=''" x-show="search || filterSupplier || filterKeadaan"
-                        class="px-3 py-2.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    Reset
+                {{-- Submit & Reset --}}
+                <button type="submit" class="px-4 py-2.5 bg-slate-800 text-white font-medium rounded-xl hover:bg-slate-900 transition-colors">
+                    Filter
                 </button>
-            </div>
+                @if(request()->anyFilled(['search', 'supplier', 'keadaan']))
+                    <a href="{{ route('barangs.index', ['per_page' => request('per_page')]) }}" class="px-3 py-2.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Reset
+                    </a>
+                @endif
+            </form>
         </div>
 
         {{-- Table --}}
@@ -118,10 +127,8 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($barangs as $barang)
-                    <tr class="hover:bg-slate-50 transition-colors"
-                        x-show="rowVisible('{{ addslashes($barang->nama_barang) }}', '{{ addslashes($barang->kode_barang) }}', '{{ addslashes($barang->merk_model) }}', '{{ addslashes($barang->supplier->nama_supplier ?? '') }}', {{ $barang->jumlah_baik }}, {{ $barang->jumlah_rusak_ringan }}, {{ $barang->jumlah_rusak_berat }})"
-                        x-transition.opacity>
-                        <td class="px-4 py-4 text-center text-slate-500">{{ $loop->iteration }}</td>
+                    <tr class="hover:bg-slate-50 transition-colors" x-transition.opacity>
+                        <td class="px-4 py-4 text-center text-slate-500">{{ $barangs->firstItem() + $loop->index }}</td>
                         <td class="px-4 py-4 font-medium text-slate-900" x-show="columns.includes('nama_barang')">{{ $barang->nama_barang }}</td>
                         <td class="px-4 py-4" x-show="columns.includes('merk_model')">{{ $barang->merk_model ?? '-' }}</td>
                         <td class="px-4 py-4 font-mono text-xs" x-show="columns.includes('no_seri_pabrik')">{{ $barang->no_seri_pabrik ?? '-' }}</td>
@@ -179,10 +186,14 @@
             </table>
         </div>
 
-        {{-- Footer info --}}
-        <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center">
-            <span>Total: {{ $barangs->count() }} barang</span>
-            <span>Klik <strong>Kolom</strong> untuk mengatur kolom yang ditampilkan</span>
+        {{-- Footer info & Pagination --}}
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-xs text-slate-500">Total: {{ $barangs->total() }} barang | Klik <strong>Kolom</strong> untuk mengatur kolom</span>
+            @if($barangs->hasPages())
+                <div class="w-full md:w-auto overflow-x-auto">
+                    {{ $barangs->onEachSide(1)->links() }}
+                </div>
+            @endif
         </div>
     </div>
 
@@ -254,21 +265,6 @@ function barangTable() {
                 this.columns.push(key);
             }
             localStorage.setItem('barang_columns', JSON.stringify(this.columns));
-        },
-        rowVisible(nama, kode, merk, supplier, baik, rr, rb) {
-            // Search filter
-            if (this.search) {
-                const q = this.search.toLowerCase();
-                const haystack = (nama + ' ' + kode + ' ' + merk + ' ' + supplier).toLowerCase();
-                if (!haystack.includes(q)) return false;
-            }
-            // Supplier filter
-            if (this.filterSupplier && supplier !== this.filterSupplier) return false;
-            // Keadaan filter
-            if (this.filterKeadaan === 'baik' && baik <= 0) return false;
-            if (this.filterKeadaan === 'rusak_ringan' && rr <= 0) return false;
-            if (this.filterKeadaan === 'rusak_berat' && rb <= 0) return false;
-            return true;
         }
     }
 }

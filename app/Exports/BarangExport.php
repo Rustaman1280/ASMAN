@@ -3,18 +3,26 @@
 namespace App\Exports;
 
 use App\Models\Barang;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class BarangExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
+class BarangExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
 {
-    public function collection()
+    protected $query;
+
+    public function __construct(Builder $query)
     {
-        return Barang::with(['supplier', 'ruangans'])->get();
+        $this->query = $query;
+    }
+
+    public function query()
+    {
+        return $this->query;
     }
 
     public function headings(): array
