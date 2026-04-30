@@ -20,7 +20,7 @@
 
     <!-- Filter & Search -->
     <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-        <form action="{{ route('mutasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <form action="{{ route('mutasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
             <div class="md:col-span-2">
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cari Barang / Keterangan</label>
                 <div class="relative">
@@ -29,6 +29,15 @@
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik kata kunci..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
                 </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Admin / Pencatat</label>
+                <select name="user_id" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                    <option value="">Semua Admin</option>
+                    @foreach($admins as $admin)
+                        <option value="{{ $admin->id }}" {{ request('user_id') == $admin->id ? 'selected' : '' }}>{{ $admin->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jenis Mutasi</label>
@@ -52,7 +61,7 @@
                     <input type="date" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
                 </div>
                 <button type="submit" class="mt-5 px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-colors text-sm font-medium">Filter</button>
-                @if(request()->anyFilled(['search', 'jenis_mutasi', 'tanggal_mulai', 'tanggal_akhir']))
+                @if(request()->anyFilled(['search', 'jenis_mutasi', 'tanggal_mulai', 'tanggal_akhir', 'user_id']))
                     <a href="{{ route('mutasi.index') }}" class="mt-5 px-3 py-2 bg-slate-200 text-slate-600 rounded-xl hover:bg-slate-300 transition-colors text-sm font-medium" title="Reset Filter">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </a>

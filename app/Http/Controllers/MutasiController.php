@@ -54,6 +54,10 @@ class MutasiController extends Controller
             $query->whereDate('tanggal_mutasi', '<=', $request->tanggal_akhir);
         }
 
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
         return $query;
     }
 
@@ -61,7 +65,8 @@ class MutasiController extends Controller
     {
         $query = $this->buildQuery($request);
         $mutasis = $query->paginate(15)->withQueryString();
-        return view('mutasi.index', compact('mutasis'));
+        $admins = \App\Models\User::orderBy('name')->get();
+        return view('mutasi.index', compact('mutasis', 'admins'));
     }
 
     public function export(Request $request)

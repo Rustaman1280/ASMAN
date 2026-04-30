@@ -52,6 +52,10 @@
                         </div>
                     </div>
                     <!-- Tombol Tambah dihapus, diarahkan ke Mutasi -->
+                    <a href="{{ route('barangs.create') }}" class="inline-flex items-center px-3.5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Tambah Barang
+                    </a>
                 </div>
             </div>
 
@@ -144,12 +148,17 @@
                         <td class="px-4 py-4 text-sm" x-show="columns.includes('lokasi')">
                             @if($barang->ruangans->isNotEmpty())
                                 <div class="flex flex-wrap gap-1">
-                                    @foreach($barang->ruangans as $r)
+                                    @foreach($barang->ruangans->take(1) as $r)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                                             {{ $r->nama }}
                                             <span class="ml-1 text-blue-400">×{{ $r->pivot->jumlah }}</span>
                                         </span>
                                     @endforeach
+                                    @if($barang->ruangans->count() > 1)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200" title="{{ $barang->ruangans->skip(1)->pluck('nama')->implode(', ') }}">
+                                            +{{ $barang->ruangans->count() - 1 }} lainnya
+                                        </span>
+                                    @endif
                                 </div>
                             @else - @endif
                         </td>
