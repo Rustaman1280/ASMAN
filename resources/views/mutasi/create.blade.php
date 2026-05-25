@@ -83,24 +83,18 @@
 
             <!-- Pilih Unit (Untuk selain Penambahan) -->
             <div x-show="jenisMutasi !== '' && jenisMutasi !== 'penambahan'" x-cloak class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
-                <div>
+                <div wire:ignore>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Unit Barang <span class="text-rose-500">*</span></label>
-                    <select name="unit_barang_id" x-model="selectedUnit" @change="updateUnitInfo" :required="jenisMutasi !== '' && jenisMutasi !== 'penambahan'"
-                            class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                    <select name="unit_barang_id[]" id="unit_select" multiple x-model="selectedUnit" :required="jenisMutasi !== '' && jenisMutasi !== 'penambahan'"
+                            class="w-full bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
+                            placeholder="Ketik untuk mencari unit...">
                         <option value="">Pilih Unit...</option>
                         @foreach($unitBarangs as $unit)
-                            <option value="{{ $unit->id }}" data-kondisi="{{ $unit->kondisi }}" data-ruangan="{{ $unit->ruangan_id }}">
+                            <option value="{{ $unit->id }}">
                                 {{ $unit->kode_unit }} - {{ $unit->barang->nama_barang }} ({{ $unit->kondisi }}, Lokasi: {{ $unit->ruangan->nama ?? 'Belum ditempatkan' }})
                             </option>
                         @endforeach
                     </select>
-                </div>
-
-                <!-- Info Unit Terpilih -->
-                <div x-show="selectedUnit !== ''" class="flex items-center gap-4 text-sm bg-white p-3 rounded-lg border border-slate-200">
-                    <div>Status Saat Ini: <strong x-text="currentKondisi" class="uppercase text-amber-600"></strong></div>
-                    <div class="w-px h-4 bg-slate-300"></div>
-                    <div>Lokasi Saat Ini: <strong x-text="currentRuangan"></strong></div>
                 </div>
 
                 <!-- Fields for Ubah Status -->
@@ -164,41 +158,38 @@
     </div>
 </div>
 
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <script>
     function mutasiForm() {
         return {
             jenisMutasi: '{{ $preselectedJenis ?? "" }}',
-            selectedUnit: '{{ $preselectedUnitId ?? "" }}',
-            currentKondisi: '',
-            currentRuangan: '',
             
             init() {
-                if (this.selectedUnit) {
-                    // Slight delay to ensure DOM is ready
-                    setTimeout(() => {
-                        this.updateUnitInfo();
-                    }, 100);
-                }
-            },
-
-            updateUnitInfo() {
-                if (!this.selectedUnit) {
-                    this.currentKondisi = '';
-                    this.currentRuangan = '';
-                    return;
-                }
-                const selectEl = document.querySelector('select[name="unit_barang_id"]');
-                const option = selectEl.options[selectEl.selectedIndex];
-                if (option) {
-                    this.currentKondisi = option.getAttribute('data-kondisi') || '-';
-                    // We need actual ruangan name, we can just extract from option text or rely on a map.
-                    // For simplicity, we just extract from the text which has "(... Lokasi: X)"
-                    const text = option.textContent;
-                    const match = text.match(/Lokasi:\s([^)]+)/);
-                    this.currentRuangan = match ? match[1] : 'Belum ditempatkan';
-                }
+                // Initialize TomSelect
+                this.$nextTick(() => {
+                    if (document.getElementById('unit_select')) {
+                        new TomSelect('#unit_select', {
+                            plugins: ['remove_button'],
+                            maxItems: null,
+                            searchField: ['text'],
+                            placeholder: 'Ketik untuk mencari unit...'
+                        });
+                    }
+                });
             }
         }
     }
 </script>
+@endpush
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<style>
+    .ts-control { border-radius: 0.75rem; padding: 0.625rem 1rem; border-color: #e2e8f0; font-size: 0.875rem; background-color: #ffffff; }
+    .ts-control.focus { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(219, 234, 254, 0.5); }
+    .ts-dropdown { border-radius: 0.75rem; font-size: 0.875rem; }
+    .tom-select .ts-dropdown-content { max-height: 250px; }
+</style>
+@endpush
 @endsection

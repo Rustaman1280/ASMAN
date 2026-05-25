@@ -110,7 +110,8 @@ class MutasiController extends Controller
             'tanggal_mutasi' => 'required|date',
             'keterangan' => 'nullable|string',
             'barang_id' => 'required_if:jenis_mutasi,penambahan|nullable|exists:barangs,id',
-            'unit_barang_id' => 'required_unless:jenis_mutasi,penambahan|nullable|exists:unit_barangs,id',
+            'unit_barang_id' => 'required_unless:jenis_mutasi,penambahan|array',
+            'unit_barang_id.*' => 'exists:unit_barangs,id',
             'kondisi' => 'required_if:jenis_mutasi,penambahan|nullable|in:baik,rusak_ringan,rusak_berat',
             'ruangan_id' => 'required_if:jenis_mutasi,penambahan|nullable|exists:ruangans,id',
             'status_akhir' => 'required_if:jenis_mutasi,ubah_status|nullable|in:baik,rusak_ringan,rusak_berat',
@@ -165,140 +166,138 @@ class MutasiController extends Controller
             return redirect()->route('mutasi.index')->with('success', "Berhasil menambahkan {$jumlahUnit} unit barang baru.");
         }
 
-        $unit = UnitBarang::findOrFail($request->unit_barang_id);
-        $barang = $unit->barang;
+        $unitIds = $request->unit_barang_id;
+        $count = count($unitIds);
 
-        if ($jenis === 'ubah_status') {
-            $oldStatus = $unit->kondisi;
-            $newStatus = $request->status_akhir;
-            
-            if ($oldStatus !== $newStatus) {
-                $unit->kondisi = $newStatus;
-                $unit->save();
+        foreach ($unitIds as $unitId) {
+            $unit = UnitBarang::findOrFail($unitId);
+            $barang = $unit->barang;
 
-                $oldCol = 'jumlah_' . $oldStatus;
-                $newCol = 'jumlah_' . $newStatus;
-                if ($barang->$oldCol > 0) $barang->$oldCol -= 1;
-                $barang->$newCol += 1;
-                $barang->save();
+            if ($jenis === 'ubah_status') {
+                $oldStatus = $unit->kondisi;
+                $newStatus = $request->status_akhir;
+                
+                if ($oldStatus !== $newStatus) {
+                    $unit->kondisi = $newStatus;
+                    $unit->save();
 
+                    $oldCol = 'jumlah_' . $oldStatus;
+                    $newCol = 'jumlah_' . $newStatus;
+                    if ($barang->$oldCol > 0) $barang->$oldCol -= 1;
+                    $barang->$newCol += 1;
+                    $barang->save();
+
+                    Mutasi::create([
+                        'barang_id' => $barang->id,
+                        'unit_barang_id' => $unit->id,
+                        'user_id' => auth()->id(),
+                        'jenis_mutasi' => 'ubah_status',
+                        'keterangan' => $request->keterangan,
+                        'tanggal_mutasi' => $request->tanggal_mutasi,
+                        'status_awal' => $oldStatus,
+                        'status_akhir' => $newStatus,
+                    ]);
+                }
+            } elseif ($jenis === 'ubah_lokasi') {
+                $oldLocation = $unit->ruangan_id;
+                $newLocation = $request->ruangan_akhir_id;
+                
+                if ($oldLocation != $newLocation) {
+                    $unit->ruangan_id = $newLocation;
+                    $unit->save();
+
+                    if ($oldLocation) {
+                        $oldPivot = $barang->ruangans()->where('ruangan_id', $oldLocation)->first();
+                        if ($oldPivot) {
+                            $newJumlah = $oldPivot->pivot->jumlah - 1;
+                            if ($newJumlah <= 0) {
+                                $barang->ruangans()->detach($oldLocation);
+                            } else {
+                                $barang->ruangans()->updateExistingPivot($oldLocation, ['jumlah' => $newJumlah]);
+                            }
+                        }
+                    }
+                    if ($newLocation) {
+                        $newPivot = $barang->ruangans()->where('ruangan_id', $newLocation)->first();
+                        if ($newPivot) {
+                            $barang->ruangans()->updateExistingPivot($newLocation, ['jumlah' => $newPivot->pivot->jumlah + 1]);
+                        } else {
+                            $barang->ruangans()->attach($newLocation, ['jumlah' => 1]);
+                        }
+                    }
+
+                    Mutasi::create([
+                        'barang_id' => $barang->id,
+                        'unit_barang_id' => $unit->id,
+                        'user_id' => auth()->id(),
+                        'jenis_mutasi' => 'ubah_lokasi',
+                        'keterangan' => $request->keterangan,
+                        'tanggal_mutasi' => $request->tanggal_mutasi,
+                        'ruangan_awal_id' => $oldLocation,
+                        'ruangan_akhir_id' => $newLocation,
+                    ]);
+                }
+            } elseif ($jenis === 'peminjaman') {
                 Mutasi::create([
                     'barang_id' => $barang->id,
                     'unit_barang_id' => $unit->id,
                     'user_id' => auth()->id(),
-                    'jenis_mutasi' => 'ubah_status',
+                    'jenis_mutasi' => 'peminjaman',
                     'keterangan' => $request->keterangan,
                     'tanggal_mutasi' => $request->tanggal_mutasi,
-                    'status_awal' => $oldStatus,
-                    'status_akhir' => $newStatus,
+                    'nama_peminjam' => $request->nama_peminjam,
+                    'tanggal_kembali' => $request->tanggal_kembali,
                 ]);
-            }
-            return redirect()->route('mutasi.index')->with('success', 'Status unit barang berhasil diubah.');
-        }
+            } elseif ($jenis === 'pengembalian') {
+                Mutasi::create([
+                    'barang_id' => $barang->id,
+                    'unit_barang_id' => $unit->id,
+                    'user_id' => auth()->id(),
+                    'jenis_mutasi' => 'pengembalian',
+                    'keterangan' => $request->keterangan,
+                    'tanggal_mutasi' => $request->tanggal_mutasi,
+                ]);
+            } elseif ($jenis === 'penghapusan') {
+                $status = $unit->kondisi;
+                $ruangan = $unit->ruangan_id;
 
-        if ($jenis === 'ubah_lokasi') {
-            $oldLocation = $unit->ruangan_id;
-            $newLocation = $request->ruangan_akhir_id;
-            
-            if ($oldLocation != $newLocation) {
-                $unit->ruangan_id = $newLocation;
-                $unit->save();
+                $unit->delete();
 
-                if ($oldLocation) {
-                    $oldPivot = $barang->ruangans()->where('ruangan_id', $oldLocation)->first();
-                    if ($oldPivot) {
-                        $newJumlah = $oldPivot->pivot->jumlah - 1;
+                $col = 'jumlah_' . $status;
+                if ($barang->$col > 0) $barang->$col -= 1;
+                $barang->save();
+
+                if ($ruangan) {
+                    $pivot = $barang->ruangans()->where('ruangan_id', $ruangan)->first();
+                    if ($pivot) {
+                        $newJumlah = $pivot->pivot->jumlah - 1;
                         if ($newJumlah <= 0) {
-                            $barang->ruangans()->detach($oldLocation);
+                            $barang->ruangans()->detach($ruangan);
                         } else {
-                            $barang->ruangans()->updateExistingPivot($oldLocation, ['jumlah' => $newJumlah]);
+                            $barang->ruangans()->updateExistingPivot($ruangan, ['jumlah' => $newJumlah]);
                         }
                     }
                 }
-                if ($newLocation) {
-                    $newPivot = $barang->ruangans()->where('ruangan_id', $newLocation)->first();
-                    if ($newPivot) {
-                        $barang->ruangans()->updateExistingPivot($newLocation, ['jumlah' => $newPivot->pivot->jumlah + 1]);
-                    } else {
-                        $barang->ruangans()->attach($newLocation, ['jumlah' => 1]);
-                    }
-                }
 
                 Mutasi::create([
                     'barang_id' => $barang->id,
-                    'unit_barang_id' => $unit->id,
+                    'unit_barang_id' => null, 
                     'user_id' => auth()->id(),
-                    'jenis_mutasi' => 'ubah_lokasi',
+                    'jenis_mutasi' => 'penghapusan',
                     'keterangan' => $request->keterangan,
                     'tanggal_mutasi' => $request->tanggal_mutasi,
-                    'ruangan_awal_id' => $oldLocation,
-                    'ruangan_akhir_id' => $newLocation,
+                    'status_awal' => $status,
+                    'ruangan_awal_id' => $ruangan,
                 ]);
             }
-            return redirect()->route('mutasi.index')->with('success', 'Lokasi unit barang berhasil diubah.');
         }
 
-        if ($jenis === 'peminjaman') {
-            Mutasi::create([
-                'barang_id' => $barang->id,
-                'unit_barang_id' => $unit->id,
-                'user_id' => auth()->id(),
-                'jenis_mutasi' => 'peminjaman',
-                'keterangan' => $request->keterangan,
-                'tanggal_mutasi' => $request->tanggal_mutasi,
-                'nama_peminjam' => $request->nama_peminjam,
-                'tanggal_kembali' => $request->tanggal_kembali,
-            ]);
-            return redirect()->route('mutasi.index')->with('success', 'Peminjaman barang berhasil dicatat.');
-        }
+        if ($jenis === 'ubah_status') return redirect()->route('mutasi.index')->with('success', "Status {$count} unit barang berhasil diubah.");
+        if ($jenis === 'ubah_lokasi') return redirect()->route('mutasi.index')->with('success', "Lokasi {$count} unit barang berhasil diubah.");
+        if ($jenis === 'peminjaman') return redirect()->route('mutasi.index')->with('success', "Peminjaman {$count} barang berhasil dicatat.");
+        if ($jenis === 'pengembalian') return redirect()->route('mutasi.index')->with('success', "Pengembalian {$count} barang berhasil dicatat.");
+        if ($jenis === 'penghapusan') return redirect()->route('mutasi.index')->with('success', "{$count} unit barang berhasil dihapus dari sistem.");
 
-        if ($jenis === 'pengembalian') {
-            Mutasi::create([
-                'barang_id' => $barang->id,
-                'unit_barang_id' => $unit->id,
-                'user_id' => auth()->id(),
-                'jenis_mutasi' => 'pengembalian',
-                'keterangan' => $request->keterangan,
-                'tanggal_mutasi' => $request->tanggal_mutasi,
-            ]);
-            return redirect()->route('mutasi.index')->with('success', 'Pengembalian barang berhasil dicatat.');
-        }
-
-        if ($jenis === 'penghapusan') {
-            $status = $unit->kondisi;
-            $ruangan = $unit->ruangan_id;
-
-            $unit->delete();
-
-            $col = 'jumlah_' . $status;
-            if ($barang->$col > 0) $barang->$col -= 1;
-            $barang->save();
-
-            if ($ruangan) {
-                $pivot = $barang->ruangans()->where('ruangan_id', $ruangan)->first();
-                if ($pivot) {
-                    $newJumlah = $pivot->pivot->jumlah - 1;
-                    if ($newJumlah <= 0) {
-                        $barang->ruangans()->detach($ruangan);
-                    } else {
-                        $barang->ruangans()->updateExistingPivot($ruangan, ['jumlah' => $newJumlah]);
-                    }
-                }
-            }
-
-            Mutasi::create([
-                'barang_id' => $barang->id,
-                'unit_barang_id' => null, 
-                'user_id' => auth()->id(),
-                'jenis_mutasi' => 'penghapusan',
-                'keterangan' => $request->keterangan,
-                'tanggal_mutasi' => $request->tanggal_mutasi,
-                'status_awal' => $status,
-                'ruangan_awal_id' => $ruangan,
-            ]);
-            return redirect()->route('mutasi.index')->with('success', 'Unit barang berhasil dihapus dari sistem.');
-        }
-
-        return back();
+        return redirect()->route('mutasi.index');
     }
 }

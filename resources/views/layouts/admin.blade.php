@@ -14,6 +14,7 @@
         }
         [x-cloak] { display: none !important; }
     </style>
+    @stack('styles')
 </head>
 <body class="bg-slate-50">
     <div class="flex h-screen overflow-hidden">
@@ -163,5 +164,6 @@
             </div>
         </main>
     </div>
+    @stack('scripts')
 </body>
 </html>
