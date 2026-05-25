@@ -21,7 +21,7 @@
                     Semua Unit
                 </a>
             @endif
-            <!-- Edit Jumlah Utama dihapus -->
+        </div>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
