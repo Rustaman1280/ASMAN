@@ -73,7 +73,7 @@ class RuanganController extends Controller
 
     public function show(Ruangan $ruangan)
     {
-        $ruangan->load('barangs.supplier', 'jurusan');
+        $ruangan->load('barangs', 'jurusan');
         return view('ruangan.show', compact('ruangan'));
     }
 

@@ -16,12 +16,20 @@
             @csrf
             @method('PUT')
             
-            <div class="space-y-6">
-                {{-- Baris 1: Nama & Merk --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-8">
+                <div>
+                    <h4 class="text-md font-bold text-slate-700 border-b border-slate-200 pb-2 mb-4">Informasi Utama</h4>
+                    <div class="space-y-6">
+                        {{-- Baris 1: Nama & Merk --}}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="nama_barang" class="block text-sm font-semibold text-slate-700 mb-2">Nama Barang</label>
-                        <input type="text" name="nama_barang" id="nama_barang" value="{{ old('nama_barang', $barang->nama_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: Laptop Asus" required>
+                        <label for="kategori" class="block text-sm font-semibold text-slate-700 mb-2">Nama Barang Sesuai Permendagri 108</label>
+                        <input type="text" name="kategori" id="kategori" value="{{ old('kategori', $barang->kategori) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" required>
+                        @error('kategori') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label for="nama_barang" class="block text-sm font-semibold text-slate-700 mb-2">Nama Barang (Spesifik)</label>
+                        <input type="text" name="nama_barang" id="nama_barang" value="{{ old('nama_barang', $barang->nama_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" required>
                         @error('nama_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
@@ -34,41 +42,46 @@
                 {{-- Baris 2: No Seri & Ukuran --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="no_seri_pabrik" class="block text-sm font-semibold text-slate-700 mb-2">No. Seri Pabrik</label>
-                        <input type="text" name="no_seri_pabrik" id="no_seri_pabrik" value="{{ old('no_seri_pabrik', $barang->no_seri_pabrik) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: SN-12345678">
+                        <label for="no_seri_pabrik" class="block text-sm font-semibold text-slate-700 mb-2">No. Sertifikat / Pabrik / Chasis / Mesin / Polisi</label>
+                        <input type="text" name="no_seri_pabrik" id="no_seri_pabrik" value="{{ old('no_seri_pabrik', $barang->no_seri_pabrik) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
                         @error('no_seri_pabrik') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label for="ukuran" class="block text-sm font-semibold text-slate-700 mb-2">Ukuran</label>
-                        <input type="text" name="ukuran" id="ukuran" value="{{ old('ukuran', $barang->ukuran) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: 14 inch">
+                        <label for="ukuran" class="block text-sm font-semibold text-slate-700 mb-2">Ukuran / Konstruksi (P,SP,D)</label>
+                        <input type="text" name="ukuran" id="ukuran" value="{{ old('ukuran', $barang->ukuran) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
                         @error('ukuran') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 {{-- Baris 3: Bahan & Tahun --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label for="bahan" class="block text-sm font-semibold text-slate-700 mb-2">Bahan</label>
                         <input type="text" name="bahan" id="bahan" value="{{ old('bahan', $barang->bahan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: Plastik, Metal">
                         @error('bahan') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label for="tahun_pembuatan" class="block text-sm font-semibold text-slate-700 mb-2">Tahun Pembuatan/Pembelian</label>
-                        <input type="text" name="tahun_pembuatan" id="tahun_pembuatan" value="{{ old('tahun_pembuatan', $barang->tahun_pembuatan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: 2026" maxlength="4">
+                        <label for="tahun_pembuatan" class="block text-sm font-semibold text-slate-700 mb-2">Tahun Perolehan</label>
+                        <input type="text" name="tahun_pembuatan" id="tahun_pembuatan" value="{{ old('tahun_pembuatan', $barang->tahun_pembuatan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" maxlength="4">
                         @error('tahun_pembuatan') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label for="masa_manfaat_bulan" class="block text-sm font-semibold text-slate-700 mb-2">Umur Ekonomis / Masa Manfaat (Bulan)</label>
+                        <input type="number" name="masa_manfaat_bulan" id="masa_manfaat_bulan" min="0" step="1" value="{{ old('masa_manfaat_bulan', $barang->masa_manfaat_bulan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        @error('masa_manfaat_bulan') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 {{-- Baris 4: Kode & Harga --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="kode_barang" class="block text-sm font-semibold text-slate-700 mb-2">Nomor Kode Barang</label>
-                        <input type="text" name="kode_barang" id="kode_barang" value="{{ old('kode_barang', $barang->kode_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: BRG-001" required>
+                        <label for="kode_barang" class="block text-sm font-semibold text-slate-700 mb-2">Kode Barang / ID Barang</label>
+                        <input type="text" name="kode_barang" id="kode_barang" value="{{ old('kode_barang', $barang->kode_barang) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" required>
                         @error('kode_barang') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label for="harga_perolehan" class="block text-sm font-semibold text-slate-700 mb-2">Harga Beli/Perolehan (Rp)</label>
-                        <input type="number" name="harga_perolehan" id="harga_perolehan" min="0" step="1" value="{{ old('harga_perolehan', $barang->harga_perolehan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400" placeholder="Contoh: 5000000">
+                        <label for="harga_perolehan" class="block text-sm font-semibold text-slate-700 mb-2">Harga Satuan (Rp)</label>
+                        <input type="number" name="harga_perolehan" id="harga_perolehan" min="0" step="1" value="{{ old('harga_perolehan', $barang->harga_perolehan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
                         @error('harga_perolehan') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -99,17 +112,81 @@
                     </div>
                 </div>
 
-                {{-- Baris 6: Supplier --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="supplier_id" class="block text-sm font-semibold text-slate-700 mb-2">Supplier</label>
-                        <select name="supplier_id" id="supplier_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all" required>
-                            <option value="">-- Pilih Supplier --</option>
-                            @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" {{ old('supplier_id', $barang->supplier_id) == $supplier->id ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
-                            @endforeach
-                        </select>
-                        @error('supplier_id') <p class="mt-2 text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                {{-- Data OPD & Perolehan --}}
+                <div>
+                    <h4 class="text-md font-bold text-slate-700 border-b border-slate-200 pb-2 mb-4">Instansi & Perolehan</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label for="nama_opd" class="block text-sm font-semibold text-slate-700 mb-2">Nama OPD</label>
+                            <input type="text" name="nama_opd" id="nama_opd" value="{{ old('nama_opd', $barang->nama_opd) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                        <div>
+                            <label for="sub_opd" class="block text-sm font-semibold text-slate-700 mb-2">Sub OPD</label>
+                            <input type="text" name="sub_opd" id="sub_opd" value="{{ old('sub_opd', $barang->sub_opd) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                        <div>
+                            <label for="alamat" class="block text-sm font-semibold text-slate-700 mb-2">Alamat</label>
+                            <input type="text" name="alamat" id="alamat" value="{{ old('alamat', $barang->alamat) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                        <div>
+                            <label for="reg" class="block text-sm font-semibold text-slate-700 mb-2">Reg.</label>
+                            <input type="text" name="reg" id="reg" value="{{ old('reg', $barang->reg) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                        <div>
+                            <label for="cara_perolehan" class="block text-sm font-semibold text-slate-700 mb-2">Cara Perolehan</label>
+                            <input type="text" name="cara_perolehan" id="cara_perolehan" value="{{ old('cara_perolehan', $barang->cara_perolehan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                        <div>
+                            <label for="bulan_perolehan" class="block text-sm font-semibold text-slate-700 mb-2">Bulan Perolehan (1-12)</label>
+                            <input type="number" name="bulan_perolehan" id="bulan_perolehan" min="1" max="12" value="{{ old('bulan_perolehan', $barang->bulan_perolehan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Akuntansi & Penyusutan --}}
+                <div>
+                    <h4 class="text-md font-bold text-slate-700 border-b border-slate-200 pb-2 mb-4">Data Akuntansi & Penyusutan</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Koreksi</label>
+                            <input type="number" step="0.01" name="koreksi" value="{{ old('koreksi', $barang->koreksi) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Penyusutan s.d Tahun Sebelumnya</label>
+                            <input type="number" step="0.01" name="penyusutan_sd_tahun_sebelumnya" value="{{ old('penyusutan_sd_tahun_sebelumnya', $barang->penyusutan_sd_tahun_sebelumnya) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Beban Penyusutan per Bulan</label>
+                            <input type="number" step="0.01" name="beban_penyusutan_per_bulan" value="{{ old('beban_penyusutan_per_bulan', $barang->beban_penyusutan_per_bulan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Bulan Manfaat s.d 31 Des 2024</label>
+                            <input type="number" step="0.01" name="bulan_manfaat_sd_des_2024" value="{{ old('bulan_manfaat_sd_des_2024', $barang->bulan_manfaat_sd_des_2024) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Akum Peny s.d 31 Des 2024</label>
+                            <input type="number" step="0.01" name="akum_peny_sd_des_2024" value="{{ old('akum_peny_sd_des_2024', $barang->akum_peny_sd_des_2024) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Koreksi Pembulatan</label>
+                            <input type="number" step="0.01" name="koreksi_pembulatan" value="{{ old('koreksi_pembulatan', $barang->koreksi_pembulatan) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Masa Manfaat s.d 31 Mar 2025</label>
+                            <input type="number" step="0.01" name="masa_manfaat_sd_mar_2025" value="{{ old('masa_manfaat_sd_mar_2025', $barang->masa_manfaat_sd_mar_2025) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Beban Penyusutan 2025</label>
+                            <input type="number" step="0.01" name="beban_penyusutan_2025" value="{{ old('beban_penyusutan_2025', $barang->beban_penyusutan_2025) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Akum Peny s.d 2025</label>
+                            <input type="number" step="0.01" name="akum_peny_sd_2025" value="{{ old('akum_peny_sd_2025', $barang->akum_peny_sd_2025) }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2 font-bold text-indigo-700">Nilai Buku</label>
+                            <input type="number" step="0.01" name="nilai_buku" value="{{ old('nilai_buku', $barang->nilai_buku) }}" class="w-full px-4 py-3 bg-indigo-50 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none transition-all font-bold text-indigo-700">
+                        </div>
                     </div>
                 </div>
 

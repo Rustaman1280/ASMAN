@@ -19,13 +19,27 @@ class Barang extends Model
         'jumlah_rusak_ringan',
         'jumlah_rusak_berat',
         'keterangan_mutasi',
-        'supplier_id',
+        'jenis',
+        'kategori',
+        'penanggungjawab',
+        'masa_manfaat_bulan',
+        'reg',
+        'alamat',
+        'cara_perolehan',
+        'bulan_perolehan',
+        'koreksi',
+        'penyusutan_sd_tahun_sebelumnya',
+        'beban_penyusutan_per_bulan',
+        'bulan_manfaat_sd_des_2024',
+        'akum_peny_sd_des_2024',
+        'koreksi_pembulatan',
+        'masa_manfaat_sd_mar_2025',
+        'beban_penyusutan_2025',
+        'akum_peny_sd_2025',
+        'nilai_buku',
+        'nama_opd',
+        'sub_opd'
     ];
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
 
     public function ruangans()
     {

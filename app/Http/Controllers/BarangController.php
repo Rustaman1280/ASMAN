@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
-use App\Models\Supplier;
 use App\Models\Ruangan;
 use App\Exports\BarangExport;
 use App\Imports\BarangImport;
@@ -14,7 +13,7 @@ class BarangController extends Controller
 {
     private function buildQuery(Request $request)
     {
-        $query = Barang::with(['supplier', 'ruangans']);
+        $query = Barang::with(['ruangans']);
         $user = auth()->user();
 
         if ($user && $user->isPjRuangan()) {
@@ -28,16 +27,7 @@ class BarangController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('nama_barang', 'like', "%{$search}%")
                   ->orWhere('kode_barang', 'like', "%{$search}%")
-                  ->orWhere('merk_model', 'like', "%{$search}%")
-                  ->orWhereHas('supplier', function($sq) use ($search) {
-                      $sq->where('nama_supplier', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        if ($request->filled('supplier')) {
-            $query->whereHas('supplier', function($q) use ($request) {
-                $q->where('nama_supplier', $request->supplier);
+                  ->orWhere('merk_model', 'like', "%{$search}%");
             });
         }
 
@@ -55,13 +45,11 @@ class BarangController extends Controller
         $query = $this->buildQuery($request);
         $perPage = $request->get('per_page', 15);
         $barangs = $query->latest()->paginate($perPage)->withQueryString();
-        $suppliers = Supplier::all();
-        return view('barangs.index', compact('barangs', 'suppliers'));
+        return view('barangs.index', compact('barangs'));
     }
 
     public function create()
     {
-        $suppliers = Supplier::all();
         $user = auth()->user();
         
         $ruangansQuery = Ruangan::query();
@@ -71,7 +59,7 @@ class BarangController extends Controller
         $ruangans = $ruangansQuery->get();
         $preLokasiId = request('lokasi_id');
         $redirectTo = request('redirect_to');
-        return view('barangs.create', compact('suppliers', 'ruangans', 'preLokasiId', 'redirectTo'));
+        return view('barangs.create', compact('ruangans', 'preLokasiId', 'redirectTo'));
     }
 
     public function store(Request $request)
@@ -88,8 +76,26 @@ class BarangController extends Controller
             'jumlah_baik' => 'required|integer|min:0',
             'jumlah_rusak_ringan' => 'required|integer|min:0',
             'jumlah_rusak_berat' => 'required|integer|min:0',
+            'kategori' => 'nullable|string',
+            'penanggungjawab' => 'nullable|string',
+            'masa_manfaat_bulan' => 'nullable|integer',
+            'reg' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'cara_perolehan' => 'nullable|string',
+            'bulan_perolehan' => 'nullable|integer',
+            'koreksi' => 'nullable|numeric',
+            'penyusutan_sd_tahun_sebelumnya' => 'nullable|numeric',
+            'beban_penyusutan_per_bulan' => 'nullable|numeric',
+            'bulan_manfaat_sd_des_2024' => 'nullable|numeric',
+            'akum_peny_sd_des_2024' => 'nullable|numeric',
+            'koreksi_pembulatan' => 'nullable|numeric',
+            'masa_manfaat_sd_mar_2025' => 'nullable|numeric',
+            'beban_penyusutan_2025' => 'nullable|numeric',
+            'akum_peny_sd_2025' => 'nullable|numeric',
+            'nilai_buku' => 'nullable|numeric',
+            'nama_opd' => 'nullable|string',
+            'sub_opd' => 'nullable|string',
             'keterangan_mutasi' => 'nullable|string',
-            'supplier_id' => 'required|exists:suppliers,id',
             'lokasi' => 'nullable|array',
             'lokasi.*.ruangan_id' => 'required|exists:ruangans,id',
             'lokasi.*.jumlah' => 'required|integer|min:1',
@@ -115,7 +121,7 @@ class BarangController extends Controller
 
     public function show(Barang $barang)
     {
-        $barang->load(['supplier', 'ruangans']);
+        $barang->load(['ruangans']);
         return view('barangs.show', compact('barang'));
     }
 
@@ -169,7 +175,6 @@ class BarangController extends Controller
 
     public function edit(Barang $barang)
     {
-        $suppliers = Supplier::all();
         $user = auth()->user();
 
         $ruangansQuery = Ruangan::query();
@@ -178,7 +183,7 @@ class BarangController extends Controller
         }
         $ruangans = $ruangansQuery->get();
         $barang->load('ruangans');
-        return view('barangs.edit', compact('barang', 'suppliers', 'ruangans'));
+        return view('barangs.edit', compact('barang', 'ruangans'));
     }
 
     public function update(Request $request, Barang $barang)
@@ -195,8 +200,26 @@ class BarangController extends Controller
             'jumlah_baik' => 'required|integer|min:0',
             'jumlah_rusak_ringan' => 'required|integer|min:0',
             'jumlah_rusak_berat' => 'required|integer|min:0',
+            'kategori' => 'nullable|string',
+            'penanggungjawab' => 'nullable|string',
+            'masa_manfaat_bulan' => 'nullable|integer',
+            'reg' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'cara_perolehan' => 'nullable|string',
+            'bulan_perolehan' => 'nullable|integer',
+            'koreksi' => 'nullable|numeric',
+            'penyusutan_sd_tahun_sebelumnya' => 'nullable|numeric',
+            'beban_penyusutan_per_bulan' => 'nullable|numeric',
+            'bulan_manfaat_sd_des_2024' => 'nullable|numeric',
+            'akum_peny_sd_des_2024' => 'nullable|numeric',
+            'koreksi_pembulatan' => 'nullable|numeric',
+            'masa_manfaat_sd_mar_2025' => 'nullable|numeric',
+            'beban_penyusutan_2025' => 'nullable|numeric',
+            'akum_peny_sd_2025' => 'nullable|numeric',
+            'nilai_buku' => 'nullable|numeric',
+            'nama_opd' => 'nullable|string',
+            'sub_opd' => 'nullable|string',
             'keterangan_mutasi' => 'nullable|string',
-            'supplier_id' => 'required|exists:suppliers,id',
             'lokasi' => 'nullable|array',
             'lokasi.*.ruangan_id' => 'required|exists:ruangans,id',
             'lokasi.*.jumlah' => 'required|integer|min:1',
@@ -342,12 +365,49 @@ class BarangController extends Controller
             public function array(): array
             {
                 return [
-                    ['Laptop Asus', 'Asus Vivobook', 'SN-12345', '14 inch', 'Plastik', '2024', 'BRG-001', 5, 0, 0, 7500000, '', 'CV Maju Jaya'],
+                    [
+                        1, '1.3.2.06.01.02.999', '', 'LAIN - LAIN PERALATAN STUDIO VIDEO DAN FILM', 'LAIN - LAIN PERALATAN STUDIO VIDEO DAN FILM', 
+                        'SMKN 1 GARUT', 'DJI RONIN RS 4 Gimbal Stabilizer', '', 'BOS REGULER', 2, 2025, '', 'B', 1, 9250000, 9250000, 9250000, 
+                        0, 8, 0, 0, 8, 0, 0, 0, 11, 1059905, 1059905, 8190095, 'DINAS PENDIDIKAN', 'SMKN 1 GARUT', 'KABUPATEN GARUT'
+                    ],
                 ];
             }
             public function headings(): array
             {
-                return ['Nama Barang', 'Merk/Model', 'No Seri Pabrik', 'Ukuran', 'Bahan', 'Tahun Pembuatan', 'Nomor Kode Barang', 'Jumlah Baik', 'Jumlah Rusak Ringan', 'Jumlah Rusak Berat', 'Harga Perolehan', 'Keterangan Mutasi', 'Supplier'];
+                return [
+                    'No.',
+                    'Kode Barang/ ID Barang',
+                    'Reg.',
+                    'Nama Barang Sesuai Permendagri 108',
+                    'Nama Barang',
+                    'Alamat',
+                    'Merk / Tipe',
+                    'No. Sertifikat / No. Pabrik / No. Chasis / No. Mesin / No. Polisi/ No. Ruas Jalan/ No. Daerah Irigasi',
+                    'Cara Perolehan / Status Barang',
+                    'Bulan Perolehan',
+                    'Tahun Perolehan',
+                    'Ukuran Barang / Konstruksi (P,SP,D)',
+                    'Keadaan Barang (B,KB,RB)',
+                    'Volume',
+                    'Nilai Perolehan',
+                    'Harga Satuan',
+                    'Nilai Perolehan2',
+                    'Koreksi',
+                    'Umur Ekonomis',
+                    'Penyusutan s.d Tahun Sebelumnya',
+                    'Beban Penyusutan per Bulan',
+                    'Umur Ekonomis2',
+                    'Bulan Manfaat s.d 31 Des 2024',
+                    'Akum Peny s.d 31 Des 2024',
+                    'Koreksi Pembulatan',
+                    'Masa Manfaat s.d 31 Mar 2025',
+                    'Beban Penyusutan 2025',
+                    'Akum Peny s.d 2025',
+                    'Nilai Buku',
+                    'Nama OPD',
+                    'Sub OPD',
+                    'Keterangan/ Tgl. Buku/ Tahun Sensus'
+                ];
             }
             public function styles(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet)
             {

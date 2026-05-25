@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Barang;
-use App\Models\Supplier;
-use App\Models\Ruangan;
 
 class BarangSeeder extends Seeder
 {
@@ -14,178 +12,74 @@ class BarangSeeder extends Seeder
      */
     public function run(): void
     {
-        $supplier = Supplier::firstOrCreate([
-            'nama_supplier' => 'CV Maju Jaya Abadi',
-        ], [
-            'no_telp' => '08123456789',
-            'alamat' => 'Jl. Teknologi No. 123, Jakarta',
-        ]);
+        $filePath = base_path('seed_data.tsv');
+        if (!file_exists($filePath)) {
+            $this->command->error("File seed_data.tsv tidak ditemukan.");
+            return;
+        }
 
-        $ruangKelas = Ruangan::where('nama', 'Ruang Kelas X RPL 1')->first();
-        $labKomputer = Ruangan::where('nama', 'Lab Komputer 1')->first();
-        $perpustakaan = Ruangan::where('nama', 'Perpustakaan Pusat')->first();
-        $ruangKepsek = Ruangan::where('nama', 'Ruang Kepala Sekolah')->first();
-        $ruangGuru = Ruangan::where('nama', 'Ruang Guru Utama')->first();
-        $ruangTU = Ruangan::where('nama', 'Ruang Tata Usaha (TU)')->first();
-        $ruangUKS = Ruangan::where('nama', 'Ruang UKS')->first();
-        $gudang = Ruangan::where('nama', 'Gudang Pusat')->first();
-        $lapangan = Ruangan::where('nama', 'Lapangan Olahraga')->first();
+        $file = fopen($filePath, 'r');
+        while (($line = fgets($file)) !== false) {
+            $cols = explode("\t", trim($line));
+            if (count($cols) < 32) continue;
 
-        $barangs = [
-            // 1
-            [
-                'kode_barang' => 'BRG-MJA-01',
-                'nama_barang' => 'Meja Siswa Standard',
-                'merk_model' => 'Chitose',
-                'no_seri_pabrik' => '-',
-                'ukuran' => '60x40x75 cm',
-                'bahan' => 'Kayu & Besi',
-                'tahun_pembuatan' => '2022',
-                'harga_perolehan' => 350000,
-                'jumlah_baik' => 30,
-                'jumlah_rusak_ringan' => 5,
-                'jumlah_rusak_berat' => 1,
-                'lokasi' => [
-                    $ruangKelas ? ['id' => $ruangKelas->id, 'jumlah' => 36] : null
-                ]
-            ],
-            // 2
-            [
-                'kode_barang' => 'BRG-KRS-02',
-                'nama_barang' => 'Kursi Siswa Standard',
-                'merk_model' => 'Chitose',
-                'no_seri_pabrik' => '-',
-                'ukuran' => 'Standard',
-                'bahan' => 'Kayu & Besi',
-                'tahun_pembuatan' => '2022',
-                'harga_perolehan' => 250000,
-                'jumlah_baik' => 34,
-                'jumlah_rusak_ringan' => 2,
-                'jumlah_rusak_berat' => 0,
-                'lokasi' => [
-                    $ruangKelas ? ['id' => $ruangKelas->id, 'jumlah' => 36] : null
-                ]
-            ],
-            // 3
-            [
-                'kode_barang' => 'BRG-PC-03',
-                'nama_barang' => 'PC Desktop',
-                'merk_model' => 'Lenovo ThinkCentre',
-                'no_seri_pabrik' => 'SN-LNV-001',
-                'ukuran' => '-',
-                'bahan' => 'Metal/Plastik',
-                'tahun_pembuatan' => '2023',
-                'harga_perolehan' => 9500000,
-                'jumlah_baik' => 20,
-                'jumlah_rusak_ringan' => 0,
-                'jumlah_rusak_berat' => 0,
-                'lokasi' => [
-                    $labKomputer ? ['id' => $labKomputer->id, 'jumlah' => 20] : null
-                ]
-            ],
-            // 4
-            [
-                'kode_barang' => 'BRG-RB-04',
-                'nama_barang' => 'Rak Buku Besar',
-                'merk_model' => 'IKEA Billy',
-                'no_seri_pabrik' => '-',
-                'ukuran' => '80x28x202 cm',
-                'bahan' => 'Partikel Board',
-                'tahun_pembuatan' => '2021',
-                'harga_perolehan' => 1200000,
-                'jumlah_baik' => 10,
-                'jumlah_rusak_ringan' => 0,
-                'jumlah_rusak_berat' => 0,
-                'lokasi' => [
-                    $perpustakaan ? ['id' => $perpustakaan->id, 'jumlah' => 10] : null
-                ]
-            ],
-            // 5
-            [
-                'kode_barang' => 'BRG-AC-05',
-                'nama_barang' => 'AC Split 1 PK',
-                'merk_model' => 'Daikin',
-                'no_seri_pabrik' => 'AC-DKN-005',
-                'ukuran' => 'Standard',
-                'bahan' => 'Plastik/Metal',
-                'tahun_pembuatan' => '2024',
-                'harga_perolehan' => 4500000,
-                'jumlah_baik' => 2,
-                'jumlah_rusak_ringan' => 1,
-                'jumlah_rusak_berat' => 0,
-                'lokasi' => [
-                    $ruangGuru ? ['id' => $ruangGuru->id, 'jumlah' => 2] : null,
-                    $ruangKepsek ? ['id' => $ruangKepsek->id, 'jumlah' => 1] : null
-                ]
-            ],
-            // 6
-            [
-                'kode_barang' => 'BRG-LA-06',
-                'nama_barang' => 'Lemari Arsip Besi',
-                'merk_model' => 'Brother',
-                'no_seri_pabrik' => '-',
-                'ukuran' => '90x40x185 cm',
-                'bahan' => 'Besi',
-                'tahun_pembuatan' => '2020',
-                'harga_perolehan' => 2300000,
-                'jumlah_baik' => 4,
-                'jumlah_rusak_ringan' => 1,
-                'jumlah_rusak_berat' => 0,
-                'lokasi' => [
-                    $ruangTU ? ['id' => $ruangTU->id, 'jumlah' => 4] : null,
-                    $gudang ? ['id' => $gudang->id, 'jumlah' => 1] : null
-                ]
-            ],
-            // 7
-            [
-                'kode_barang' => 'BRG-BB-07',
-                'nama_barang' => 'Bola Basket',
-                'merk_model' => 'Spalding',
-                'no_seri_pabrik' => '-',
-                'ukuran' => 'Size 7',
-                'bahan' => 'Kulit Sintetis',
-                'tahun_pembuatan' => '2023',
-                'harga_perolehan' => 600000,
-                'jumlah_baik' => 5,
-                'jumlah_rusak_ringan' => 2,
-                'jumlah_rusak_berat' => 1,
-                'lokasi' => [
-                    $lapangan ? ['id' => $lapangan->id, 'jumlah' => 8] : null
-                ]
-            ],
-        ];
+            $kode_barang = trim($cols[1]);
+            // Skip invalid or header rows
+            if (empty($kode_barang) || $kode_barang == 'Kode Barang/') continue;
+            
+            $keadaan = strtoupper(trim($cols[12]));
+            $volume = (int) str_replace(',', '', trim($cols[13]));
+            
+            $jmlBaik = 0;
+            $jmlRusakRingan = 0;
+            $jmlRusakBerat = 0;
+            
+            if ($keadaan === 'RB') $jmlRusakBerat = $volume;
+            elseif ($keadaan === 'KB') $jmlRusakRingan = $volume;
+            else $jmlBaik = $volume;
 
-        foreach ($barangs as $data) {
+            $umurEkonomis = floatval(str_replace(',', '', trim($cols[18])));
+            $masaManfaatBulan = $umurEkonomis > 0 ? (int)($umurEkonomis * 12) : null;
+
             $barang = Barang::updateOrCreate(
-                ['kode_barang' => $data['kode_barang']],
+                ['kode_barang' => $kode_barang],
                 [
-                    'nama_barang' => $data['nama_barang'],
-                    'merk_model' => $data['merk_model'],
-                    'no_seri_pabrik' => $data['no_seri_pabrik'],
-                    'ukuran' => $data['ukuran'],
-                    'bahan' => $data['bahan'],
-                    'tahun_pembuatan' => $data['tahun_pembuatan'],
-                    'harga_perolehan' => $data['harga_perolehan'],
-                    'jumlah_baik' => $data['jumlah_baik'],
-                    'jumlah_rusak_ringan' => $data['jumlah_rusak_ringan'],
-                    'jumlah_rusak_berat' => $data['jumlah_rusak_berat'],
-                    'supplier_id' => $supplier->id,
+                    'reg' => trim($cols[2]),
+                    'kategori' => trim($cols[3]),
+                    'nama_barang' => trim($cols[4]),
+                    'alamat' => trim($cols[5]),
+                    'merk_model' => trim($cols[6]),
+                    'no_seri_pabrik' => trim($cols[7]),
+                    'cara_perolehan' => trim($cols[8]),
+                    'bulan_perolehan' => trim($cols[9]),
+                    'tahun_pembuatan' => trim($cols[10]),
+                    'ukuran' => trim($cols[11]),
+                    'jumlah_baik' => $jmlBaik,
+                    'jumlah_rusak_ringan' => $jmlRusakRingan,
+                    'jumlah_rusak_berat' => $jmlRusakBerat,
+                    'harga_perolehan' => floatval(str_replace(',', '', trim($cols[15]))),
+                    'koreksi' => floatval(str_replace(',', '', trim($cols[17]))),
+                    'masa_manfaat_bulan' => $masaManfaatBulan,
+                    'penyusutan_sd_tahun_sebelumnya' => floatval(str_replace(',', '', trim($cols[19]))),
+                    'beban_penyusutan_per_bulan' => floatval(str_replace(',', '', trim($cols[20]))),
+                    'bulan_manfaat_sd_des_2024' => floatval(str_replace(',', '', trim($cols[22]))),
+                    'akum_peny_sd_des_2024' => floatval(str_replace(',', '', trim($cols[23]))),
+                    'koreksi_pembulatan' => floatval(str_replace(',', '', trim($cols[24]))),
+                    'masa_manfaat_sd_mar_2025' => floatval(str_replace(',', '', trim($cols[25]))),
+                    'beban_penyusutan_2025' => floatval(str_replace(',', '', trim($cols[26]))),
+                    'akum_peny_sd_2025' => floatval(str_replace(',', '', trim($cols[27]))),
+                    'nilai_buku' => floatval(str_replace(',', '', trim($cols[28]))),
+                    'nama_opd' => trim($cols[29]),
+                    'sub_opd' => trim($cols[30]),
+                    'keterangan_mutasi' => trim($cols[31]),
                 ]
             );
 
-            $syncData = [];
-            foreach ($data['lokasi'] as $lokasi) {
-                if ($lokasi && isset($lokasi['id'])) {
-                    $syncData[$lokasi['id']] = ['jumlah' => $lokasi['jumlah']];
-                }
-            }
-            if (count($syncData) > 0) {
-                $barang->ruangans()->sync($syncData);
-                
-                // Re-sync units logic if identical to controller
-                $this->syncUnits($barang);
-            }
+            $this->syncUnits($barang);
         }
+        fclose($file);
+        
+        $this->command->info("Data barang berhasil di-seed dari TSV!");
     }
 
     private function syncUnits(Barang $b)
@@ -211,22 +105,6 @@ class BarangSeeder extends Seeder
             }
         } elseif ($existingCount > $targetCount) {
              \App\Models\UnitBarang::where('barang_id', $b->id)->orderBy('id', 'desc')->take($existingCount - $targetCount)->delete();
-        }
-
-        $b->load('ruangans');
-        $units = $b->unitBarangs()->orderBy('id')->get();
-        \App\Models\UnitBarang::where('barang_id', $b->id)->update(['ruangan_id' => null]);
-        
-        $unitIdx = 0;
-        foreach ($b->ruangans as $ruangan) {
-            $quota = $ruangan->pivot->jumlah;
-            for ($i = 0; $i < $quota; $i++) {
-                if (isset($units[$unitIdx])) {
-                    $units[$unitIdx]->ruangan_id = $ruangan->id;
-                    $units[$unitIdx]->save();
-                    $unitIdx++;
-                }
-            }
         }
     }
 }

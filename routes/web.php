@@ -4,7 +4,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\MutasiController;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +25,6 @@ Route::middleware('auth')->group(function () {
         // Resource routes (permission checks inside controllers)
         Route::resource('jurusans', JurusanController::class);
         Route::resource('ruangans', RuanganController::class);
-        Route::resource('suppliers', SupplierController::class);
         Route::resource('barangs', BarangController::class);
         
         Route::get('mutasi/export', [MutasiController::class, 'export'])->name('mutasi.export');

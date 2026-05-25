@@ -12,6 +12,12 @@ class UnitBarang extends Model
         'kondisi',
         'keterangan',
         'ruangan_id',
+        'no_mesin',
+        'no_rangka',
+        'status',
+        'harga_perolehan',
+        'akumulasi_penyusutan',
+        'nilai_buku',
     ];
 
     public function barang()

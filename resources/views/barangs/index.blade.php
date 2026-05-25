@@ -69,16 +69,11 @@
                 {{-- Search --}}
                 <div class="relative flex-1">
                     <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, kode, merk, supplier..."
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, kode, merk..."
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-slate-400">
                 </div>
                 {{-- Filter Supplier --}}
-                <select name="supplier" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[180px]">
-                    <option value="">Semua Supplier</option>
-                    @foreach($suppliers as $supplier)
-                        <option value="{{ $supplier->nama_supplier }}" {{ request('supplier') == $supplier->nama_supplier ? 'selected' : '' }}>{{ $supplier->nama_supplier }}</option>
-                    @endforeach
-                </select>
+
                 {{-- Filter Keadaan --}}
                 <select name="keadaan" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all min-w-[160px]">
                     <option value="">Semua Keadaan</option>
@@ -90,7 +85,7 @@
                 <button type="submit" class="px-4 py-2.5 bg-slate-800 text-white font-medium rounded-xl hover:bg-slate-900 transition-colors">
                     Filter
                 </button>
-                @if(request()->anyFilled(['search', 'supplier', 'keadaan']))
+                @if(request()->anyFilled(['search', 'keadaan']))
                     <a href="{{ route('barangs.index', ['per_page' => request('per_page')]) }}" class="px-3 py-2.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all flex items-center">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         Reset
@@ -105,23 +100,36 @@
                 <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b border-slate-200">
                     <tr>
                         <th class="px-4 py-4 text-center">No</th>
+                        <th class="px-4 py-4" x-show="columns.includes('kode_barang')">Kode Barang/ID</th>
+                        <th class="px-4 py-4" x-show="columns.includes('reg')">Reg.</th>
+                        <th class="px-4 py-4" x-show="columns.includes('kategori')">Nama Barang Sesuai Permendagri 108</th>
                         <th class="px-4 py-4" x-show="columns.includes('nama_barang')">Nama Barang</th>
-                        <th class="px-4 py-4" x-show="columns.includes('merk_model')">Merk/Model</th>
-                        <th class="px-4 py-4" x-show="columns.includes('no_seri_pabrik')">No. Seri Pabrik</th>
-                        <th class="px-4 py-4" x-show="columns.includes('ukuran')">Ukuran</th>
-                        <th class="px-4 py-4" x-show="columns.includes('bahan')">Bahan</th>
-                        <th class="px-4 py-4" x-show="columns.includes('tahun')">Tahun</th>
-                        <th class="px-4 py-4" x-show="columns.includes('kode_barang')">Kode</th>
-                        <th class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">Jumlah</th>
-                        <th class="px-4 py-4 text-right" x-show="columns.includes('harga')">Harga</th>
-                        <th class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
-                            <span class="text-emerald-600">B</span> /
-                            <span class="text-amber-600">RR</span> /
-                            <span class="text-rose-600">RB</span>
-                        </th>
-                        <th class="px-4 py-4" x-show="columns.includes('supplier')">Supplier</th>
-                        <th class="px-4 py-4" x-show="columns.includes('lokasi')">Lokasi</th>
-                        <th class="px-4 py-4" x-show="columns.includes('mutasi')">Ket. Mutasi</th>
+                        <th class="px-4 py-4" x-show="columns.includes('alamat')">Alamat</th>
+                        <th class="px-4 py-4" x-show="columns.includes('merk_model')">Merk / Tipe</th>
+                        <th class="px-4 py-4" x-show="columns.includes('no_seri_pabrik')">No. Sertifikat / Pabrik / Mesin / Polisi</th>
+                        <th class="px-4 py-4" x-show="columns.includes('cara_perolehan')">Cara Perolehan / Status Barang</th>
+                        <th class="px-4 py-4" x-show="columns.includes('bulan_perolehan')">Bulan Perolehan</th>
+                        <th class="px-4 py-4" x-show="columns.includes('tahun')">Tahun Perolehan</th>
+                        <th class="px-4 py-4" x-show="columns.includes('ukuran')">Ukuran / Konstruksi (P,SP,D)</th>
+                        <th class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">Keadaan (B,KB,RB)</th>
+                        <th class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">Volume</th>
+                        
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('harga')">Harga Satuan</th>
+                        
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('koreksi')">Koreksi</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('penyusutan_sd_tahun_sebelumnya')">Penyusutan s.d Tahun Sebelumnya</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('beban_penyusutan_per_bulan')">Beban Penyusutan per Bulan</th>
+                        <th class="px-4 py-4" x-show="columns.includes('masa_manfaat')">Umur Ekonomis</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('bulan_manfaat_sd_des_2024')">Bulan Manfaat s.d 31 Des 2024</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('akum_peny_sd_des_2024')">Akum Peny s.d 31 Des 2024</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('koreksi_pembulatan')">Koreksi Pembulatan</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('masa_manfaat_sd_mar_2025')">Masa Manfaat s.d 31 Mar 2025</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('beban_penyusutan_2025')">Beban Penyusutan 2025</th>
+                        <th class="px-4 py-4 text-right" x-show="columns.includes('akum_peny_sd_2025')">Akum Peny s.d 2025</th>
+                        <th class="px-4 py-4 text-right font-bold" x-show="columns.includes('nilai_buku')">Nilai Buku</th>
+                        <th class="px-4 py-4" x-show="columns.includes('nama_opd')">Nama OPD</th>
+                        <th class="px-4 py-4" x-show="columns.includes('sub_opd')">Sub OPD</th>
+                        <th class="px-4 py-4" x-show="columns.includes('mutasi')">Keterangan / Tgl. Buku</th>
                         <th class="px-4 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -129,21 +137,18 @@
                     @forelse($barangs as $barang)
                     <tr class="hover:bg-slate-50 transition-colors" x-transition.opacity>
                         <td class="px-4 py-4 text-center text-slate-500">{{ $barangs->firstItem() + $loop->index }}</td>
-                        <td class="px-4 py-4 font-medium text-slate-900" x-show="columns.includes('nama_barang')">{{ $barang->nama_barang }}</td>
+                        <td class="px-4 py-4 font-mono text-xs font-semibold text-slate-500" x-show="columns.includes('kode_barang')">{{ $barang->kode_barang }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('reg')">{{ $barang->reg ?? '-' }}</td>
+                        <td class="px-4 py-4 font-medium text-slate-900" x-show="columns.includes('kategori')">{{ $barang->kategori ?? '-' }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('nama_barang')">{{ $barang->nama_barang }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('alamat')">{{ $barang->alamat ?? '-' }}</td>
                         <td class="px-4 py-4" x-show="columns.includes('merk_model')">{{ $barang->merk_model ?? '-' }}</td>
                         <td class="px-4 py-4 font-mono text-xs" x-show="columns.includes('no_seri_pabrik')">{{ $barang->no_seri_pabrik ?? '-' }}</td>
-                        <td class="px-4 py-4" x-show="columns.includes('ukuran')">{{ $barang->ukuran ?? '-' }}</td>
-                        <td class="px-4 py-4" x-show="columns.includes('bahan')">{{ $barang->bahan ?? '-' }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('cara_perolehan')">{{ $barang->cara_perolehan ?? '-' }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('bulan_perolehan')">{{ $barang->bulan_perolehan ?? '-' }}</td>
                         <td class="px-4 py-4" x-show="columns.includes('tahun')">{{ $barang->tahun_pembuatan ?? '-' }}</td>
-                        <td class="px-4 py-4 font-mono text-xs font-semibold text-slate-500" x-show="columns.includes('kode_barang')">{{ $barang->kode_barang }}</td>
-                        <td class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $barang->jumlah_total > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $barang->jumlah_total }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-right whitespace-nowrap" x-show="columns.includes('harga')">
-                            @if($barang->harga_perolehan) Rp {{ number_format($barang->harga_perolehan, 0, ',', '.') }} @else - @endif
-                        </td>
+                        <td class="px-4 py-4" x-show="columns.includes('ukuran')">{{ $barang->ukuran ?? '-' }}</td>
+                        
                         <td class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
                             <div class="flex items-center justify-center gap-1">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700">{{ $barang->jumlah_baik }}</span>
@@ -151,24 +156,51 @@
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-rose-50 text-rose-700">{{ $barang->jumlah_rusak_berat }}</span>
                             </div>
                         </td>
-                        <td class="px-4 py-4 text-sm" x-show="columns.includes('supplier')">{{ $barang->supplier->nama_supplier ?? '-' }}</td>
-                        <td class="px-4 py-4 text-sm" x-show="columns.includes('lokasi')">
-                            @if($barang->ruangans->isNotEmpty())
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($barang->ruangans->take(1) as $r)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                            {{ $r->nama }}
-                                            <span class="ml-1 text-blue-400">×{{ $r->pivot->jumlah }}</span>
-                                        </span>
-                                    @endforeach
-                                    @if($barang->ruangans->count() > 1)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200" title="{{ $barang->ruangans->skip(1)->pluck('nama')->implode(', ') }}">
-                                            +{{ $barang->ruangans->count() - 1 }} lainnya
-                                        </span>
-                                    @endif
-                                </div>
-                            @else - @endif
+
+                        <td class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $barang->jumlah_total > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $barang->jumlah_total }}
+                            </span>
                         </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap" x-show="columns.includes('harga')">
+                            @if($barang->harga_perolehan) {{ number_format($barang->harga_perolehan, 2, '.', ',') }} @else 0.00 @endif
+                        </td>
+                        
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('koreksi')">
+                            {{ number_format($barang->koreksi, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('penyusutan_sd_tahun_sebelumnya')">
+                            {{ number_format($barang->penyusutan_sd_tahun_sebelumnya, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('beban_penyusutan_per_bulan')">
+                            {{ number_format($barang->beban_penyusutan_per_bulan, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-center" x-show="columns.includes('masa_manfaat')">{{ $barang->masa_manfaat_bulan ? $barang->masa_manfaat_bulan : '-' }}</td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('bulan_manfaat_sd_des_2024')">
+                            {{ number_format($barang->bulan_manfaat_sd_des_2024, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('akum_peny_sd_des_2024')">
+                            {{ number_format($barang->akum_peny_sd_des_2024, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('koreksi_pembulatan')">
+                            {{ number_format($barang->koreksi_pembulatan, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('masa_manfaat_sd_mar_2025')">
+                            {{ number_format($barang->masa_manfaat_sd_mar_2025, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('beban_penyusutan_2025')">
+                            {{ number_format($barang->beban_penyusutan_2025, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap text-slate-500" x-show="columns.includes('akum_peny_sd_2025')">
+                            {{ number_format($barang->akum_peny_sd_2025, 2, '.', ',') }}
+                        </td>
+                        <td class="px-4 py-4 text-right whitespace-nowrap font-bold text-slate-800" x-show="columns.includes('nilai_buku')">
+                            {{ number_format($barang->nilai_buku, 2, '.', ',') }}
+                        </td>
+                        
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('nama_opd')">{{ $barang->nama_opd ?? '-' }}</td>
+                        <td class="px-4 py-4 text-slate-700" x-show="columns.includes('sub_opd')">{{ $barang->sub_opd ?? '-' }}</td>
+
                         <td class="px-4 py-4 max-w-[150px] truncate text-xs text-slate-500" x-show="columns.includes('mutasi')">{{ $barang->keterangan_mutasi ?? '-' }}</td>
                         <td class="px-4 py-4 text-right">
                             <div class="flex justify-end space-x-1">
@@ -241,22 +273,37 @@ function barangTable() {
         filterKeadaan: '',
         showImport: false,
         allColumns: [
+            { key: 'kode_barang', label: 'Kode Barang / ID Barang' },
+            { key: 'reg', label: 'Reg.' },
+            { key: 'kategori', label: 'Nama Barang Sesuai Permendagri 108' },
             { key: 'nama_barang', label: 'Nama Barang' },
-            { key: 'merk_model', label: 'Merk/Model' },
-            { key: 'no_seri_pabrik', label: 'No. Seri Pabrik' },
-            { key: 'ukuran', label: 'Ukuran' },
-            { key: 'bahan', label: 'Bahan' },
-            { key: 'tahun', label: 'Tahun' },
-            { key: 'kode_barang', label: 'Nomor Kode' },
-            { key: 'jumlah', label: 'Jumlah' },
-            { key: 'harga', label: 'Harga Perolehan' },
-            { key: 'keadaan', label: 'Keadaan (B/RR/RB)' },
-            { key: 'supplier', label: 'Supplier' },
-            { key: 'lokasi', label: 'Lokasi' },
-            { key: 'mutasi', label: 'Ket. Mutasi' },
+            { key: 'alamat', label: 'Alamat' },
+            { key: 'merk_model', label: 'Merk / Tipe' },
+            { key: 'no_seri_pabrik', label: 'No. Sertifikat / No. Pabrik / No. Mesin' },
+            { key: 'cara_perolehan', label: 'Cara Perolehan / Status Barang' },
+            { key: 'bulan_perolehan', label: 'Bulan Perolehan' },
+            { key: 'tahun', label: 'Tahun Perolehan' },
+            { key: 'ukuran', label: 'Ukuran Barang / Konstruksi (P,SP,D)' },
+            { key: 'keadaan', label: 'Keadaan Barang (B,KB,RB)' },
+            { key: 'jumlah', label: 'Volume' },
+            { key: 'harga', label: 'Harga Satuan' },
+            { key: 'koreksi', label: 'Koreksi' },
+            { key: 'penyusutan_sd_tahun_sebelumnya', label: 'Penyusutan s.d Tahun Sebelumnya' },
+            { key: 'beban_penyusutan_per_bulan', label: 'Beban Penyusutan per Bulan' },
+            { key: 'masa_manfaat', label: 'Umur Ekonomis' },
+            { key: 'bulan_manfaat_sd_des_2024', label: 'Bulan Manfaat s.d 31 Des 2024' },
+            { key: 'akum_peny_sd_des_2024', label: 'Akum Peny s.d 31 Des 2024' },
+            { key: 'koreksi_pembulatan', label: 'Koreksi Pembulatan' },
+            { key: 'masa_manfaat_sd_mar_2025', label: 'Masa Manfaat s.d 31 Mar 2025' },
+            { key: 'beban_penyusutan_2025', label: 'Beban Penyusutan 2025' },
+            { key: 'akum_peny_sd_2025', label: 'Akum Peny s.d 2025' },
+            { key: 'nilai_buku', label: 'Nilai Buku' },
+            { key: 'nama_opd', label: 'Nama OPD' },
+            { key: 'sub_opd', label: 'Sub OPD' },
+            { key: 'mutasi', label: 'Keterangan/ Tgl. Buku/ Tahun Sensus' },
         ],
-        columns: JSON.parse(localStorage.getItem('barang_columns') || 'null') || [
-            'nama_barang', 'merk_model', 'kode_barang', 'jumlah', 'harga', 'keadaan', 'supplier', 'lokasi', 'mutasi'
+        columns: JSON.parse(localStorage.getItem('barang_columns_v3') || 'null') || [
+            'kode_barang', 'kategori', 'nama_barang', 'merk_model', 'no_seri_pabrik', 'tahun', 'keadaan', 'jumlah', 'harga', 'nilai_buku'
         ],
         toggleColumn(key) {
             if (this.columns.includes(key)) {
@@ -264,7 +311,7 @@ function barangTable() {
             } else {
                 this.columns.push(key);
             }
-            localStorage.setItem('barang_columns', JSON.stringify(this.columns));
+            localStorage.setItem('barang_columns_v3', JSON.stringify(this.columns));
         }
     }
 }
