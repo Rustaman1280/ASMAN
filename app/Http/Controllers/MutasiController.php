@@ -18,13 +18,13 @@ class MutasiController extends Controller
         if ($user && $user->isPjRuangan()) {
             $query->where(function ($q) use ($user) {
                 $q->whereHas('ruanganAwal', function ($sq) use ($user) {
-                    $sq->whereIn('id', $user->ruangans->pluck('id'));
+                    $sq->whereIn('ruangans.id', $user->ruangans->pluck('id'));
                 })->orWhereHas('ruanganAkhir', function ($sq) use ($user) {
-                    $sq->whereIn('id', $user->ruangans->pluck('id'));
+                    $sq->whereIn('ruangans.id', $user->ruangans->pluck('id'));
                 })->orWhereHas('unitBarang.ruangan', function ($sq) use ($user) {
-                    $sq->whereIn('id', $user->ruangans->pluck('id'));
+                    $sq->whereIn('ruangans.id', $user->ruangans->pluck('id'));
                 })->orWhereHas('barang.ruangans', function ($sq) use ($user) {
-                    $sq->whereIn('id', $user->ruangans->pluck('id'));
+                    $sq->whereIn('ruangans.id', $user->ruangans->pluck('id'));
                 });
             });
         }

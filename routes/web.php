@@ -17,10 +17,7 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class , 'logout'])->name('logout');
-    Route::get('/', function () {
-            return view('dashboard');
-        }
-        )->name('dashboard');
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
         // Resource routes (permission checks inside controllers)
         Route::resource('jurusans', JurusanController::class);

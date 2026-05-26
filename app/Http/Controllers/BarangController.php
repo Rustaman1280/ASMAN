@@ -18,7 +18,7 @@ class BarangController extends Controller
 
         if ($user && $user->isPjRuangan()) {
             $query->whereHas('ruangans', function ($q) use ($user) {
-                $q->whereIn('id', $user->ruangans->pluck('id'));
+                $q->whereIn('ruangans.id', $user->ruangans->pluck('id'));
             });
         }
 

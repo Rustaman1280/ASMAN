@@ -110,8 +110,26 @@
                         <th class="px-4 py-4" x-show="columns.includes('cara_perolehan')">Cara Perolehan / Status Barang</th>
                         <th class="px-4 py-4" x-show="columns.includes('bulan_perolehan')">Bulan Perolehan</th>
                         <th class="px-4 py-4" x-show="columns.includes('tahun')">Tahun Perolehan</th>
-                        <th class="px-4 py-4" x-show="columns.includes('ukuran')">Ukuran / Konstruksi (P,SP,D)</th>
-                        <th class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">Keadaan (B,KB,RB)</th>
+                        <th class="px-4 py-4" x-show="columns.includes('ukuran')">
+                            Ukuran / Konstruksi 
+                            <div class="relative group inline-block">
+                                <span class="cursor-help border-b border-dotted border-slate-400 hover:text-slate-900 transition-colors">(P,SP,D)</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                    P: Permanen, SP: Semi Permanen, D: Darurat
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
+                            Keadaan 
+                            <div class="relative group inline-block">
+                                <span class="cursor-help border-b border-dotted border-slate-400 hover:text-slate-900 transition-colors">(B,KB,RB)</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                    B: Baik, KB: Kurang Baik/Rusak Ringan, RB: Rusak Berat
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                </div>
+                            </div>
+                        </th>
                         <th class="px-4 py-4 text-center" x-show="columns.includes('jumlah')">Volume</th>
                         
                         <th class="px-4 py-4 text-right" x-show="columns.includes('harga')">Harga Satuan</th>
@@ -127,8 +145,26 @@
                         <th class="px-4 py-4 text-right" x-show="columns.includes('beban_penyusutan_2025')">Beban Penyusutan 2025</th>
                         <th class="px-4 py-4 text-right" x-show="columns.includes('akum_peny_sd_2025')">Akum Peny s.d 2025</th>
                         <th class="px-4 py-4 text-right font-bold" x-show="columns.includes('nilai_buku')">Nilai Buku</th>
-                        <th class="px-4 py-4" x-show="columns.includes('nama_opd')">Nama OPD</th>
-                        <th class="px-4 py-4" x-show="columns.includes('sub_opd')">Sub OPD</th>
+                        <th class="px-4 py-4" x-show="columns.includes('nama_opd')">
+                            Nama 
+                            <div class="relative group inline-block">
+                                <span class="cursor-help border-b border-dotted border-slate-400 hover:text-slate-900 transition-colors">OPD</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                    Organisasi Perangkat Daerah
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-4" x-show="columns.includes('sub_opd')">
+                            Sub 
+                            <div class="relative group inline-block">
+                                <span class="cursor-help border-b border-dotted border-slate-400 hover:text-slate-900 transition-colors">OPD</span>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-2 bg-slate-800 text-white text-xs rounded-lg shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                    Organisasi Perangkat Daerah
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                </div>
+                            </div>
+                        </th>
                         <th class="px-4 py-4" x-show="columns.includes('mutasi')">Keterangan / Tgl. Buku</th>
                         <th class="px-4 py-4 text-right">Aksi</th>
                     </tr>
@@ -147,13 +183,50 @@
                         <td class="px-4 py-4 text-slate-700" x-show="columns.includes('cara_perolehan')">{{ $barang->cara_perolehan ?? '-' }}</td>
                         <td class="px-4 py-4 text-slate-700" x-show="columns.includes('bulan_perolehan')">{{ $barang->bulan_perolehan ?? '-' }}</td>
                         <td class="px-4 py-4" x-show="columns.includes('tahun')">{{ $barang->tahun_pembuatan ?? '-' }}</td>
-                        <td class="px-4 py-4" x-show="columns.includes('ukuran')">{{ $barang->ukuran ?? '-' }}</td>
+                        <td class="px-4 py-4" x-show="columns.includes('ukuran')">
+                            @php
+                                $ukuranTooltip = '';
+                                $ukuranVal = strtoupper(trim($barang->ukuran ?? ''));
+                                if($ukuranVal === 'P') $ukuranTooltip = 'Permanen';
+                                elseif($ukuranVal === 'SP') $ukuranTooltip = 'Semi Permanen';
+                                elseif($ukuranVal === 'D') $ukuranTooltip = 'Darurat';
+                            @endphp
+                            @if($ukuranTooltip)
+                                <div class="relative group inline-block">
+                                    <span class="cursor-help border-b border-dotted border-slate-400 hover:text-slate-900 transition-colors">{{ $barang->ukuran }}</span>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-1.5 bg-slate-800 text-white text-[10px] rounded shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                        {{ $ukuranTooltip }}
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                    </div>
+                                </div>
+                            @else
+                                {{ $barang->ukuran ?? '-' }}
+                            @endif
+                        </td>
                         
                         <td class="px-3 py-4 text-center" x-show="columns.includes('keadaan')">
                             <div class="flex items-center justify-center gap-1">
-                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700">{{ $barang->jumlah_baik }}</span>
-                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-amber-50 text-amber-700">{{ $barang->jumlah_rusak_ringan }}</span>
-                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-rose-50 text-rose-700">{{ $barang->jumlah_rusak_berat }}</span>
+                                <div class="relative group inline-block">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 cursor-help hover:bg-emerald-100 transition-colors">{{ $barang->jumlah_baik }}</span>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-1.5 bg-slate-800 text-white text-[10px] rounded shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                        Baik (B)
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                    </div>
+                                </div>
+                                <div class="relative group inline-block">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 cursor-help hover:bg-amber-100 transition-colors">{{ $barang->jumlah_rusak_ringan }}</span>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-1.5 bg-slate-800 text-white text-[10px] rounded shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                        Kurang Baik / Rusak Ringan (KB)
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                    </div>
+                                </div>
+                                <div class="relative group inline-block">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 cursor-help hover:bg-rose-100 transition-colors">{{ $barang->jumlah_rusak_berat }}</span>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150 invisible group-hover:visible w-max p-1.5 bg-slate-800 text-white text-[10px] rounded shadow-xl z-[60] whitespace-nowrap text-center pointer-events-none font-normal">
+                                        Rusak Berat (RB)
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                                    </div>
+                                </div>
                             </div>
                         </td>
 
